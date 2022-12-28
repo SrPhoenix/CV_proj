@@ -2,7 +2,7 @@ from math import pi, sin, cos
 
 
 from direct.showbase.ShowBase import ShowBase
-
+from panda3d.core import KeyboardButton
 from direct.task import Task
 
 from direct.actor.Actor import Actor
@@ -25,26 +25,35 @@ class MyApp(ShowBase):
 
         #light 
 
-        mainLight = DirectionalLight("main light")
-        self.mainLightNodePath = self.render.attachNewNode(mainLight)
-        self.mainLightNodePath.setHpr(45, -45, 0)
-        self.render.setLight(self.mainLightNodePath)
+        # mainLight = DirectionalLight("main light")
+        # self.mainLightNodePath = self.render.attachNewNode(mainLight)
+        # self.mainLightNodePath.setHpr(45, -45, 0)
+        # self.render.setLight(self.mainLightNodePath)
 
 
         secondLight = DirectionalLight("Secondary light")
         self.secondLightNodePath = self.render.attachNewNode(secondLight)
         self.secondLightNodePath.setHpr(-45, 45, 0)
+        self.secondLightNodePath.setPos(60,50,40)
         self.render.setLight(self.secondLightNodePath)
 
 
-        ambientLight = AmbientLight("ambient light")
-        ambientLight.setColor(Vec4(0.2, 0.2, 0.2, 1))
-        self.ambientLightNodePath = self.render.attachNewNode(ambientLight)
-        self.render.setLight(self.ambientLightNodePath)
+        # ambientLight = AmbientLight("ambient light")
+        # ambientLight.setColor(Vec4(0.2, 0.2, 0.2, 1))
+        # self.ambientLightNodePath = self.render.attachNewNode(ambientLight)
+        # self.render.setLight(self.ambientLightNodePath)
+        
 
         self.render.setShaderAuto()
 
         # Load the environment model.
+
+        self.scene = self.loader.loadModel("models/environment")
+        # Reparent the model to render.
+        self.scene.reparentTo(self.render)
+        # Apply scale and position transforms on the model.
+        self.scene.setScale(0.25, 0.25, 0.25)
+        self.scene.setPos(-8, 42, 0)
 
         #self.scene = self.loader.loadModel("models/house/new_house.obj")
         self.house = self.loader.loadModel("models/house/new_house.obj")
@@ -57,15 +66,27 @@ class MyApp(ShowBase):
         self.house.setScale(0.5, 0.5, 0.5)
 
 
-        self.house.setPos(0, 0, 3)
+        self.house.setPos(0, 0, 2.1)
         self.house.reparentTo(self.render)
+        self.house.setHpr(self.house, 90)
         
-
 
 
         # Add the spinCameraTask procedure to the task manager.
 
-        self.taskMgr.add(self.spinCameraTask, "SpinCameraTask")
+        #self.taskMgr.add(self.spinCameraTask, "SpinCameraTask")
+
+
+
+
+
+
+
+
+
+
+
+
 
         # Load and transform the panda actor.
 
@@ -131,6 +152,8 @@ class MyApp(ShowBase):
 
     def spinCameraTask(self, task):
 
+        self.cameraRadius = 30.0
+
         angleDegrees = task.time * 60.0
 
         angleRadians = angleDegrees * (pi / 180.0)
@@ -138,6 +161,9 @@ class MyApp(ShowBase):
         self.camera.setPos(20 * sin(angleRadians), -20 * cos(angleRadians), 3)
 
         self.camera.setHpr(angleDegrees, 0, 0)
+
+
+        #self.secondLightNodePath.setHpr(angleDegrees, 120, 120)
 
         return Task.cont
 
