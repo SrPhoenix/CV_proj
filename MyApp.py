@@ -85,6 +85,40 @@ class MyApp(ShowBase):
         self.car.reparentTo(self.render)
 
 
+        #code for first person view
+        self.disableMouse()
+
+        self.cameraModel = self.loader.loadModel("models/camera")
+        self.cameraModel.reparentTo(self.render)
+        self.cameraModel.setPos(0, -20, 2)
+
+        self.camera.reparentTo(self.cameraModel)
+        self.camera.setY(self.camera, 0)
+
+		
+        self.keyMap = {"w" : False, "s" : False, "a" : False, "d" : False, "space": False, "shift": False}
+
+        self.accept("w", self.setKey, ["w", True])
+        self.accept("s", self.setKey, ["s", True])	
+        self.accept("a", self.setKey, ["a", True])	
+        self.accept("d", self.setKey, ["d", True])
+
+        self.accept("w-up", self.setKey, ["w", False])
+        self.accept("s-up", self.setKey, ["s", False])
+        self.accept("a-up", self.setKey, ["a", False])
+        self.accept("d-up", self.setKey, ["d", False])
+		
+        self.accept("space", self.setKey, ["space", True])
+        self.accept("space-up", self.setKey, ["space", False])
+
+        self.accept("shift", self.setKey, ["shift", True])
+        self.accept("shift-up", self.setKey, ["shift", False])
+
+
+
+        self.taskMgr.add(self.cameraControl, "Camera Control")
+
+
 
 
 
@@ -154,6 +188,43 @@ class MyApp(ShowBase):
 
     # Define a procedure to move the camera.
 
+    def setKey(self, key, value):
+        self.keyMap[key] = value
+
+    def cameraControl(self, task):
+        dt = globalClock.getDt()
+        if(dt > .20):
+            return task.cont
+
+        if(base.mouseWatcherNode.hasMouse() == True):
+            mpos = base.mouseWatcherNode.getMouse()
+            base.camera.setP(mpos.getY() * 30)
+            base.camera.setH(mpos.getX() * -50)
+            if (mpos.getX() < 0.1 and mpos.getX() > -0.1 ):
+                self.cameraModel.setH(self.cameraModel.getH())
+            else:
+                self.cameraModel.setH(self.cameraModel.getH() + mpos.getX() * -1)
+			
+        if(self.keyMap["w"] == True):
+            self.cameraModel.setY(self.cameraModel, 15 * dt)
+            return task.cont
+        elif(self.keyMap["s"] == True):
+            self.cameraModel.setY(self.cameraModel, -15 * dt)
+            return task.cont
+        elif(self.keyMap["a"] == True):
+            self.cameraModel.setX(self.cameraModel, -10 * dt)
+            return task.cont
+        elif(self.keyMap["d"] == True):
+            self.cameraModel.setX(self.cameraModel, 10 * dt)
+            return task.cont
+        elif(self.keyMap["shift"] == True):
+            self.cameraModel.setZ(self.cameraModel, -10 * dt)
+            return task.cont
+        elif(self.keyMap["space"] == True):
+            self.cameraModel.setZ(self.cameraModel, 10 * dt)
+            return task.cont
+        else:
+            return task.cont
 
     def moveSun(self, task):
         angleDegrees = task.time *20
@@ -162,19 +233,19 @@ class MyApp(ShowBase):
 
         return Task.cont
 
-    def spinCameraTask(self, task):
+    # def spinCameraTask(self, task):
 
-        self.cameraRadius = 30.0
+    #     self.cameraRadius = 30.0
 
-        angleDegrees = task.time * 60.0
+    #     angleDegrees = task.time * 60.0
 
-        angleRadians = angleDegrees * (pi / 180.0)
+    #     angleRadians = angleDegrees * (pi / 180.0)
 
-        self.camera.setPos(20 * sin(angleRadians), -20 * cos(angleRadians), 3)
+    #     self.camera.setPos(20 * sin(angleRadians), -20 * cos(angleRadians), 3)
 
-        self.camera.setHpr(angleDegrees, 0, 0)
+    #     self.camera.setHpr(angleDegrees, 0, 0)
 
-        return Task.cont
+    #     return Task.cont
 
 
 
