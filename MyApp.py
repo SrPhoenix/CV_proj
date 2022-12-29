@@ -25,10 +25,10 @@ class MyApp(ShowBase):
 
         #light 
 
-        # mainLight = DirectionalLight("main light")
-        # self.mainLightNodePath = self.render.attachNewNode(mainLight)
-        # self.mainLightNodePath.setHpr(45, -45, 0)
-        # self.render.setLight(self.mainLightNodePath)
+        mainLight = DirectionalLight("main light")
+        self.mainLightNodePath = self.render.attachNewNode(mainLight)
+        self.mainLightNodePath.setHpr(45, -45, 0)
+        self.render.setLight(self.mainLightNodePath)
 
 
         secondLight = DirectionalLight("Secondary light")
@@ -38,10 +38,10 @@ class MyApp(ShowBase):
         self.render.setLight(self.secondLightNodePath)
 
 
-        # ambientLight = AmbientLight("ambient light")
-        # ambientLight.setColor(Vec4(0.2, 0.2, 0.2, 1))
-        # self.ambientLightNodePath = self.render.attachNewNode(ambientLight)
-        # self.render.setLight(self.ambientLightNodePath)
+        ambientLight = AmbientLight("ambient light")
+        ambientLight.setColor(Vec4(0.2, 0.2, 0.2, 1))
+        self.ambientLightNodePath = self.render.attachNewNode(ambientLight)
+        self.render.setLight(self.ambientLightNodePath)
         
 
         self.render.setShaderAuto()
@@ -75,10 +75,14 @@ class MyApp(ShowBase):
         # Add the spinCameraTask procedure to the task manager.
 
         #self.taskMgr.add(self.spinCameraTask, "SpinCameraTask")
+        self.taskMgr.add(self.moveSun, "moveSun")
 
 
+        self.car = self.loader.loadModel('/home/borges/CV_proj/models/StationWagon/StationWagon.egg')
+        self.car.setPos(7, 0, 0.55)
+        self.car.setScale(0.25)
 
-
+        self.car.reparentTo(self.render)
 
 
 
@@ -150,6 +154,14 @@ class MyApp(ShowBase):
 
     # Define a procedure to move the camera.
 
+
+    def moveSun(self, task):
+        angleDegrees = task.time *20
+
+        self.secondLightNodePath.setHpr(angleDegrees,0,0)
+
+        return Task.cont
+
     def spinCameraTask(self, task):
 
         self.cameraRadius = 30.0
@@ -161,9 +173,6 @@ class MyApp(ShowBase):
         self.camera.setPos(20 * sin(angleRadians), -20 * cos(angleRadians), 3)
 
         self.camera.setHpr(angleDegrees, 0, 0)
-
-
-        #self.secondLightNodePath.setHpr(angleDegrees, 120, 120)
 
         return Task.cont
 
