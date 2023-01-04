@@ -2,15 +2,12 @@ from math import pi, sin, cos
 
 
 from direct.showbase.ShowBase import ShowBase
-from panda3d.core import KeyboardButton
 from direct.task import Task
+from panda3d.core import *
 
 from direct.actor.Actor import Actor
 
 from direct.interval.IntervalGlobal import Sequence
-from panda3d.core import WindowProperties
-from panda3d.core import  AmbientLight, DirectionalLight
-from panda3d.core import Vec4
 
 class MyApp(ShowBase):
 
@@ -23,12 +20,35 @@ class MyApp(ShowBase):
         properties.setSize(1000, 750)
         self.win.requestProperties(properties)
 
+
+
+        self.dayColors = [Vec4(0.8, 0.9, 1, 1), # midday
+             Vec4(0.0549, 0.0980, 0.2588, 1)] # nighttime
+
+        self.backgroundColor =Vec4(0.8, 0.9, 1, 1)
+        self.lightPosition = Vec3(0,-1,-0.5)
+        self.lightColor = Vec4(1,1,1,1)
+
+        self.timeOfDay = 0
+
+
+        # Set up the directional light
+        self.directionalLight = DirectionalLight("directionalLight")
+        self.directionalLight.setDirection(Vec3(0, 0, -1))
+        self.directionalLight.setColor(Vec4(1, 1, 1, 1))
+        directionalLightNodePath = self.render.attachNewNode(self.directionalLight)
+        self.render.setLight(directionalLightNodePath)
+
+
+
+
+
         #light 
 
-        mainLight = DirectionalLight("main light")
-        self.mainLightNodePath = self.render.attachNewNode(mainLight)
-        self.mainLightNodePath.setHpr(45, -45, 0)
-        self.render.setLight(self.mainLightNodePath)
+        # mainLight = AmbientLight("main light")
+        # self.mainLightNodePath = self.render.attachNewNode(mainLight)
+        # self.mainLightNodePath.setHpr(45, -45, 0)
+        # self.render.setLight(self.mainLightNodePath)
 
 
         secondLight = DirectionalLight("Secondary light")
@@ -38,10 +58,10 @@ class MyApp(ShowBase):
         self.render.setLight(self.secondLightNodePath)
 
 
-        ambientLight = AmbientLight("ambient light")
-        ambientLight.setColor(Vec4(0.2, 0.2, 0.2, 1))
-        self.ambientLightNodePath = self.render.attachNewNode(ambientLight)
-        self.render.setLight(self.ambientLightNodePath)
+        # thirdLight = AmbientLight("third light")
+        # thirdLight.setColor(Vec4(0.2, 0.2, 0.2, 1))
+        # self.thirdLightNodePath = self.render.attachNewNode(thirdLight)
+        # self.render.setLight(self.thirdLightNodePath)
         
 
         self.render.setShaderAuto()
@@ -55,7 +75,34 @@ class MyApp(ShowBase):
         self.scene.setScale(0.25, 0.25, 0.25)
         self.scene.setPos(-8, 42, 0)
 
-        #self.scene = self.loader.loadModel("models/house/new_house.obj")
+
+
+
+
+        #SKYCUBE WITH TEXTURES 
+        # self.cube = self.loader.loadCubeMap('cube_#.png')
+
+        # self.spaceSkyBox = self.loader.loadModel('models/Cube.egg')
+        # self.spaceSkyBox.setScale(1000)
+        # self.spaceSkyBox.setBin('background', 0)
+        # self.spaceSkyBox.setDepthWrite(0)
+        # self.spaceSkyBox.setTwoSided(True)
+        # self.spaceSkyBox.setTexture(self.cube, 1)
+        # self.spaceSkyBox.reparentTo(self.render)
+
+
+
+
+        # self.ball = self.loader.loadModel("models/Sphere_HighPoly.egg")
+        # self.ball.setPos(-7, 0, 1)
+        # self.ball.setScale(0.25)
+        # self.ball.reparentTo(self.render)
+        # self.tex = self.loader.loadCubeMap('enviromnent_cube_#.jpg')
+        # self.ball.setTexGen(TextureStage.getDefault(), TexGenAttrib.MEyeCubeMap)
+        # self.ball.setTexture(self.tex)
+
+
+
         self.house = self.loader.loadModel("models/house/new_house.obj")
 
         # Reparent the model to render.
@@ -75,7 +122,6 @@ class MyApp(ShowBase):
         # Add the spinCameraTask procedure to the task manager.
 
         #self.taskMgr.add(self.spinCameraTask, "SpinCameraTask")
-        self.taskMgr.add(self.moveSun, "moveSun")
 
 
         self.car = self.loader.loadModel('models/StationWagon/StationWagon.egg')
@@ -93,7 +139,6 @@ class MyApp(ShowBase):
         self.cameraModel.setPos(0, -20, 2)
 
         self.camera.reparentTo(self.cameraModel)
-        self.camera.setY(self.camera, 0)
 
 		
         self.keyMap = {"w" : False, "s" : False, "a" : False, "d" : False, "space": False, "shift": False}
@@ -117,76 +162,11 @@ class MyApp(ShowBase):
 
 
         self.taskMgr.add(self.cameraControl, "Camera Control")
+        self.taskMgr.add(self.updateLights, "updateLights")
 
 
 
 
-
-
-
-
-
-        # Load and transform the panda actor.
-
-        # self.wolfActor = Actor("models/lobo2/")
-        # self.wolfActor.reparentTo(self.render)
-
-        # self.wolfActor.play('Walk')
-        # self.wolfActor.loop('Walk')
-        # self.wolfActor.stop()
-        #,
-
-        #                         #{"walk": "models/panda-walk4"})
-
-        # self.pandaActor.setScale(0.005, 0.005, 0.005)
-
-        # self.pandaActor.reparentTo(self.render)
-
-        # Loop its animation.
-
-        #self.pandaActor.loop("walk")
-
-
-        # Create the four lerp intervals needed for the panda to
-
-        # walk back and forth.
-
-        # posInterval1 = self.pandaActor.posInterval(13,
-
-        #                                            Point3(0, -10, 0),
-
-        #                                            startPos=Point3(0, 10, 0))
-
-        # posInterval2 = self.pandaActor.posInterval(13,
-
-        #                                            Point3(0, 10, 0),
-
-        #                                            startPos=Point3(0, -10, 0))
-
-        # hprInterval1 = self.pandaActor.hprInterval(3,
-
-        #                                            Point3(180, 0, 0),
-
-        #                                            startHpr=Point3(0, 0, 0))
-
-        # hprInterval2 = self.pandaActor.hprInterval(3,
-
-        #                                            Point3(0, 0, 0),
-
-        #                                            startHpr=Point3(180, 0, 0))
-
-
-        # # Create and play the sequence that coordinates the intervals.
-
-        # self.pandaPace = Sequence(posInterval1, hprInterval1,
-
-        #                           posInterval2, hprInterval2,
-
-        #                           name="pandaPace")
-
-        # self.pandaPace.loop()
-
-    # Define a procedure to move the camera.
 
     def setKey(self, key, value):
         self.keyMap[key] = value
@@ -226,12 +206,64 @@ class MyApp(ShowBase):
         else:
             return task.cont
 
-    def moveSun(self, task):
-        angleDegrees = task.time *20
 
-        self.secondLightNodePath.setHpr(angleDegrees,0,0)
 
+
+    def updateLights(self, task):
+        
+        time_speed=0.001
+        # Update the time of day
+        self.timeOfDay += time_speed
+
+        if self.timeOfDay>2:
+            self.timeOfDay=0
+
+            
+        # Update the ambient light
+        #self.ambientLight.setColor(self.dayColors[int(self.timeOfDay)])
+
+        # Update the directional light
+        if self.timeOfDay < 1:
+            # Daytime to Nightime
+            self.backgroundColor[0]-=0.7451 * time_speed
+            self.backgroundColor[1]-=0.802 * time_speed
+            self.backgroundColor[2]-=0.7412 * time_speed
+            self.setBackgroundColor(self.backgroundColor)
+
+            self.lightPosition[0]-=0.2*time_speed
+            self.lightPosition[1]+=2*time_speed
+            self.lightPosition[2]+=0.5*time_speed
+            self.directionalLight.setDirection(self.lightPosition)
+
+            if self.timeOfDay<0.5:
+                self.lightColor[1]-=0.352*time_speed
+                self.lightColor[2]-=1*time_speed
+                self.directionalLight.setColor(self.lightColor)
+            else:
+                self.lightColor[0]-=0.8*time_speed
+                self.lightColor[1]-=0.447*time_speed
+                self.lightColor[2]+=0.2*time_speed
+                self.directionalLight.setColor(self.lightColor)
+        elif self.timeOfDay < 2:
+            # Nighttime to Daytime
+            self.backgroundColor[0]+=0.7451 * time_speed
+            self.backgroundColor[1]+=0.802 * time_speed
+            self.backgroundColor[2]+=0.7412 * time_speed
+            self.setBackgroundColor(self.backgroundColor)
+
+
+            self.lightPosition[0]+=0.2*time_speed
+            self.lightPosition[1]-=2*time_speed
+            self.lightPosition[2]-=0.5*time_speed
+            self.directionalLight.setDirection(self.lightPosition)
+
+            self.lightColor[0]+=0.8*time_speed
+            self.lightColor[1]+=0.8*time_speed
+            self.lightColor[2]+=0.8*time_speed
+            self.directionalLight.setColor(self.lightColor)
+        
         return Task.cont
+
 
     # def spinCameraTask(self, task):
 
