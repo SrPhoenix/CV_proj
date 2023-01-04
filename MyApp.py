@@ -25,8 +25,9 @@ class MyApp(ShowBase):
         self.dayColors = [Vec4(0.8, 0.9, 1, 1), # midday
              Vec4(0.0549, 0.0980, 0.2588, 1)] # nighttime
 
-        self.backgroundColor=Vec4(0.8, 0.9, 1, 1)
-        self.lightPosition= Vec3(0,-1,-0.5)
+        self.backgroundColor =Vec4(0.8, 0.9, 1, 1)
+        self.lightPosition = Vec3(0,-1,-0.5)
+        self.lightColor = Vec4(1,1,1,1)
 
         self.timeOfDay = 0
 
@@ -229,13 +230,20 @@ class MyApp(ShowBase):
             self.backgroundColor[2]-=0.7412 * time_speed
             self.setBackgroundColor(self.backgroundColor)
 
-
-            self.directionalLight.setColor(Vec4(1, 1, 1, 1))
-
             self.lightPosition[0]-=0.2*time_speed
             self.lightPosition[1]+=2*time_speed
             self.lightPosition[2]+=0.5*time_speed
             self.directionalLight.setDirection(self.lightPosition)
+
+            if self.timeOfDay<0.5:
+                self.lightColor[1]-=0.352*time_speed
+                self.lightColor[2]-=1*time_speed
+                self.directionalLight.setColor(self.lightColor)
+            else:
+                self.lightColor[0]-=0.8*time_speed
+                self.lightColor[1]-=0.447*time_speed
+                self.lightColor[2]+=0.2*time_speed
+                self.directionalLight.setColor(self.lightColor)
         elif self.timeOfDay < 2:
             # Nighttime to Daytime
             self.backgroundColor[0]+=0.7451 * time_speed
@@ -244,12 +252,15 @@ class MyApp(ShowBase):
             self.setBackgroundColor(self.backgroundColor)
 
 
-            self.directionalLight.setColor(Vec4(0.2, 0.2, 0.2, 1))
-
             self.lightPosition[0]+=0.2*time_speed
             self.lightPosition[1]-=2*time_speed
             self.lightPosition[2]-=0.5*time_speed
             self.directionalLight.setDirection(self.lightPosition)
+
+            self.lightColor[0]+=0.8*time_speed
+            self.lightColor[1]+=0.8*time_speed
+            self.lightColor[2]+=0.8*time_speed
+            self.directionalLight.setColor(self.lightColor)
         
         return Task.cont
 
