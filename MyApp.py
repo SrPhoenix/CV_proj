@@ -40,8 +40,8 @@ class MyApp(ShowBase):
         self.directionalLight = DirectionalLight("directionalLight")
         self.directionalLight.setDirection(Vec3(0, 0, -1))
         self.directionalLight.setColor(Vec4(1, 1, 1, 1))
-        directionalLightNodePath = self.render.attachNewNode(self.directionalLight)
-        self.render.setLight(directionalLightNodePath)
+        self.directionalLightNodePath = self.render.attachNewNode(self.directionalLight)
+        self.render.setLight(self.directionalLightNodePath)
 
 
 
@@ -62,7 +62,7 @@ class MyApp(ShowBase):
         house_light_2.setColor((1,1,1,1))
         self.house_light_2_NodePath = self.render.attachNewNode(house_light_2)
         self.house_light_2_NodePath.setHpr(-45, 45, 0)
-        self.house_light_2_NodePath.setPos(5,5,2)
+        self.house_light_2_NodePath.setPos(6,5,1)
         self.render.setLight(self.house_light_2_NodePath)
 
 
@@ -70,11 +70,17 @@ class MyApp(ShowBase):
         house_light_3.setColor((1,1,1,1))
         self.house_light_3_NodePath = self.render.attachNewNode(house_light_3)
         self.house_light_3_NodePath.setHpr(-45, 45, 0)
-        self.house_light_3_NodePath.setPos(5,-5,2)
+        self.house_light_3_NodePath.setPos(6,-5,1)
         self.render.setLight(self.house_light_3_NodePath)
 
 
 
+        nada = PointLight("nada")
+        nada.setColor((1,1,1,1))
+        self.nada_NodePath = self.render.attachNewNode(nada)
+        self.nada_NodePath.setHpr(-45, 45, 0)
+        self.nada_NodePath.setPos(100000,100000,100000)
+        self.render.setLight(self.nada_NodePath)
 
 
         self.render.setShaderAuto()
@@ -156,12 +162,15 @@ class MyApp(ShowBase):
         self.camera.reparentTo(self.cameraModel)
 
 
-        self.keyMap = {"w" : False, "s" : False, "a" : False, "d" : False, "space": False, "shift": False}
+        self.keyMap = {"w" : False, "s" : False, "a" : False, "d" : False, "space": False, "shift": False, "c": False, "l": False, "h": False}
 
         self.accept("w", self.setKey, ["w", True])
         self.accept("s", self.setKey, ["s", True])
         self.accept("a", self.setKey, ["a", True])
         self.accept("d", self.setKey, ["d", True])
+        self.accept("c", self.lightControl, ["c"])
+        self.accept("l", self.lightControl, ["l"])
+        self.accept("h", self.lightControl, ["h"])
 
         self.accept("w-up", self.setKey, ["w", False])
         self.accept("s-up", self.setKey, ["s", False])
@@ -177,30 +186,60 @@ class MyApp(ShowBase):
 
 
         self.taskMgr.add(self.cameraControl, "Camera Control")
-        self.taskMgr.add(self.updateLights, "updateLights")
+        self.taskMgr.add(self.updateLights, "Update Lights")
+        #self.taskMgr.add(self.lightControl, "Light Control")
         self.render.setAntialias(AntialiasAttrib.MAuto)
-        carLight_r= PointLight("car light")
+        carLight_r= PointLight("car light right")
         self.carLight_r_Np = self.render.attachNewNode(carLight_r)
-        self.carLight_r_Np.setPos(5.0,12.0, 1)
+        self.carLight_r_Np.setPos(7.0,17.0, 1)
         self.carLight_r_Np.reparentTo(self.car)
         self.render.setLight(self.carLight_r_Np)
 
         carLight_l= PointLight("car light Left")
         self.carLight_l_Np = self.render.attachNewNode(carLight_l)
-        self.carLight_l_Np.setPos(2.0,17.0, 1)
+        self.carLight_l_Np.setPos(8.0,17.0, 1)
         self.carLight_l_Np.reparentTo(self.car)
         self.render.setLight(self.carLight_l_Np)
 
 
         self.moveCar()
+        #print(base.messenger.toggleVerbose())
 
 
-
+    def lightControl(self,  key):
+        self.keyMap[key] = not self.keyMap.get(key)
+        if key =="c":
+            if self.keyMap["c"]:
+                self.render.clearLight(self.carLight_r_Np)
+                self.render.clearLight(self.carLight_l_Np)
+            else:
+                self.render.setLight(self.carLight_r_Np)
+                self.render.setLight(self.carLight_l_Np)
+        elif key =="l":
+            if self.keyMap["l"]:
+                self.taskMgr.remove("Update Lights")
+                self.render.clearLight(self.directionalLightNodePath)
+            else:
+                self.render.setLight(self.directionalLightNodePath)
+                self.taskMgr.add(self.updateLights, "Update Lights")
+        elif key =="h":
+            if self.keyMap["h"]:
+                self.render.clearLight(self.house_light_1_NodePath)
+                self.render.clearLight(self.house_light_2_NodePath)
+                self.render.clearLight(self.house_light_3_NodePath)
+            else:
+                self.render.setLight(self.house_light_1_NodePath)
+                self.render.setLight(self.house_light_2_NodePath)
+                self.render.setLight(self.house_light_3_NodePath)
+        
 
 
 
     def setKey(self, key, value):
         self.keyMap[key] = value
+
+    def toggle(self, key):
+        self.keyMap[key] = not self.keyMap.get(key)
 
     def cameraControl(self, task):
 
@@ -208,7 +247,7 @@ class MyApp(ShowBase):
         if(dt > .20):
             return task.cont
 
-        if(base.mouseWatcherNode.hasMouse() == True):
+        if(base.mouseWatcherNode.hasMouse()):
             mpos = base.mouseWatcherNode.getMouse()
             base.camera.setP(mpos.getY() * 30)
             base.camera.setH(mpos.getX() * -50)
@@ -217,22 +256,22 @@ class MyApp(ShowBase):
             else:
                 self.cameraModel.setH(self.cameraModel.getH() + mpos.getX() * -1)
 
-        if(self.keyMap["w"] == True):
+        if(self.keyMap["w"]):
             self.cameraModel.setY(self.cameraModel, 15 * dt)
             return task.cont
-        elif(self.keyMap["s"] == True):
+        elif(self.keyMap["s"]):
             self.cameraModel.setY(self.cameraModel, -15 * dt)
             return task.cont
-        elif(self.keyMap["a"] == True):
+        elif(self.keyMap["a"]):
             self.cameraModel.setX(self.cameraModel, -10 * dt)
             return task.cont
-        elif(self.keyMap["d"] == True):
+        elif(self.keyMap["d"]):
             self.cameraModel.setX(self.cameraModel, 10 * dt)
             return task.cont
-        elif(self.keyMap["shift"] == True):
+        elif(self.keyMap["shift"]):
             self.cameraModel.setZ(self.cameraModel, -10 * dt)
             return task.cont
-        elif(self.keyMap["space"] == True):
+        elif(self.keyMap["space"]):
             self.cameraModel.setZ(self.cameraModel, 10 * dt)
             return task.cont
         else:
