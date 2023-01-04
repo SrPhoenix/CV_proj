@@ -4,10 +4,14 @@ from math import pi, sin, cos
 from direct.showbase.ShowBase import ShowBase
 from direct.task import Task
 from panda3d.core import *
-
+from direct.showbase.ShowBaseGlobal import globalClock
 from direct.actor.Actor import Actor
 
 from direct.interval.IntervalGlobal import Sequence
+from panda3d.core import AntialiasAttrib
+from panda3d.core import Point3
+import math
+from panda3d.core import PointLight
 
 class MyApp(ShowBase):
 
@@ -32,7 +36,7 @@ class MyApp(ShowBase):
         self.timeOfDay = 0
 
 
-        # Set up the directional light
+
         self.directionalLight = DirectionalLight("directionalLight")
         self.directionalLight.setDirection(Vec3(0, 0, -1))
         self.directionalLight.setColor(Vec4(1, 1, 1, 1))
@@ -41,28 +45,37 @@ class MyApp(ShowBase):
 
 
 
+        house_light_1 = PointLight("House light 1")
+        house_light_1.setColor((1,1,1,1))
+        self.house_light_1_NodePath = self.render.attachNewNode(house_light_1)
+        self.house_light_1_NodePath.setPos(-10,-10,10)
+        self.render.setLight(self.house_light_1_NodePath)
 
 
-        #light 
-
-        # mainLight = AmbientLight("main light")
-        # self.mainLightNodePath = self.render.attachNewNode(mainLight)
-        # self.mainLightNodePath.setHpr(45, -45, 0)
-        # self.render.setLight(self.mainLightNodePath)
 
 
-        secondLight = DirectionalLight("Secondary light")
-        self.secondLightNodePath = self.render.attachNewNode(secondLight)
-        self.secondLightNodePath.setHpr(-45, 45, 0)
-        self.secondLightNodePath.setPos(60,50,40)
-        self.render.setLight(self.secondLightNodePath)
 
 
-        # thirdLight = AmbientLight("third light")
-        # thirdLight.setColor(Vec4(0.2, 0.2, 0.2, 1))
-        # self.thirdLightNodePath = self.render.attachNewNode(thirdLight)
-        # self.render.setLight(self.thirdLightNodePath)
-        
+
+
+        house_light_2 = PointLight("House light 2")
+        house_light_2.setColor((1,1,1,1))
+        self.house_light_2_NodePath = self.render.attachNewNode(house_light_2)
+        self.house_light_2_NodePath.setHpr(-45, 45, 0)
+        self.house_light_2_NodePath.setPos(5,5,2)
+        self.render.setLight(self.house_light_2_NodePath)
+
+
+        house_light_3 = PointLight("House light 3")
+        house_light_3.setColor((1,1,1,1))
+        self.house_light_3_NodePath = self.render.attachNewNode(house_light_3)
+        self.house_light_3_NodePath.setHpr(-45, 45, 0)
+        self.house_light_3_NodePath.setPos(5,-5,2)
+        self.render.setLight(self.house_light_3_NodePath)
+
+
+
+
 
         self.render.setShaderAuto()
 
@@ -79,7 +92,7 @@ class MyApp(ShowBase):
 
 
 
-        #SKYCUBE WITH TEXTURES 
+        #SKYCUBE WITH TEXTURES
         # self.cube = self.loader.loadCubeMap('cube_#.png')
 
         # self.spaceSkyBox = self.loader.loadModel('models/Cube.egg')
@@ -116,16 +129,18 @@ class MyApp(ShowBase):
         self.house.setPos(0, 0, 2.1)
         self.house.reparentTo(self.render)
         self.house.setHpr(self.house, 90)
-        
+
 
 
         # Add the spinCameraTask procedure to the task manager.
 
         #self.taskMgr.add(self.spinCameraTask, "SpinCameraTask")
 
-
+        self.car_x = 7
+        self.car_y = 0
+        self.car_z = 0.55
         self.car = self.loader.loadModel('models/StationWagon/StationWagon.egg')
-        self.car.setPos(7, 0, 0.55)
+        self.car.setPos(self.car_x, self.car_y, self.car_z)
         self.car.setScale(0.25)
 
         self.car.reparentTo(self.render)
@@ -140,19 +155,19 @@ class MyApp(ShowBase):
 
         self.camera.reparentTo(self.cameraModel)
 
-		
+
         self.keyMap = {"w" : False, "s" : False, "a" : False, "d" : False, "space": False, "shift": False}
 
         self.accept("w", self.setKey, ["w", True])
-        self.accept("s", self.setKey, ["s", True])	
-        self.accept("a", self.setKey, ["a", True])	
+        self.accept("s", self.setKey, ["s", True])
+        self.accept("a", self.setKey, ["a", True])
         self.accept("d", self.setKey, ["d", True])
 
         self.accept("w-up", self.setKey, ["w", False])
         self.accept("s-up", self.setKey, ["s", False])
         self.accept("a-up", self.setKey, ["a", False])
         self.accept("d-up", self.setKey, ["d", False])
-		
+
         self.accept("space", self.setKey, ["space", True])
         self.accept("space-up", self.setKey, ["space", False])
 
@@ -163,6 +178,22 @@ class MyApp(ShowBase):
 
         self.taskMgr.add(self.cameraControl, "Camera Control")
         self.taskMgr.add(self.updateLights, "updateLights")
+        self.render.setAntialias(AntialiasAttrib.MAuto)
+        carLight_r= PointLight("car light")
+        self.carLight_r_Np = self.render.attachNewNode(carLight_r)
+        self.carLight_r_Np.setPos(5.0,12.0, 1)
+        self.carLight_r_Np.reparentTo(self.car)
+        self.render.setLight(self.carLight_r_Np)
+
+        carLight_l= PointLight("car light Left")
+        self.carLight_l_Np = self.render.attachNewNode(carLight_l)
+        self.carLight_l_Np.setPos(2.0,17.0, 1)
+        self.carLight_l_Np.reparentTo(self.car)
+        self.render.setLight(self.carLight_l_Np)
+
+
+        self.moveCar()
+
 
 
 
@@ -172,6 +203,7 @@ class MyApp(ShowBase):
         self.keyMap[key] = value
 
     def cameraControl(self, task):
+
         dt = globalClock.getDt()
         if(dt > .20):
             return task.cont
@@ -184,7 +216,7 @@ class MyApp(ShowBase):
                 self.cameraModel.setH(self.cameraModel.getH())
             else:
                 self.cameraModel.setH(self.cameraModel.getH() + mpos.getX() * -1)
-			
+
         if(self.keyMap["w"] == True):
             self.cameraModel.setY(self.cameraModel, 15 * dt)
             return task.cont
@@ -210,7 +242,7 @@ class MyApp(ShowBase):
 
 
     def updateLights(self, task):
-        
+
         time_speed=0.001
         # Update the time of day
         self.timeOfDay += time_speed
@@ -218,7 +250,7 @@ class MyApp(ShowBase):
         if self.timeOfDay>2:
             self.timeOfDay=0
 
-            
+
         # Update the ambient light
         #self.ambientLight.setColor(self.dayColors[int(self.timeOfDay)])
 
@@ -261,7 +293,7 @@ class MyApp(ShowBase):
             self.lightColor[1]+=0.8*time_speed
             self.lightColor[2]+=0.8*time_speed
             self.directionalLight.setColor(self.lightColor)
-        
+
         return Task.cont
 
 
@@ -279,6 +311,71 @@ class MyApp(ShowBase):
 
     #     return Task.cont
 
+
+    #Moving car
+    def moveCar(self):
+        
+        posInterval1 = self.car.posInterval(3,
+
+                                                   Point3(7.0, 7.0, 0.55),
+
+                                                   startPos=Point3(7.0, -6.0, 0.55))
+
+        posInterval2 = self.car.posInterval(3,
+
+                                                   Point3(-7.0, 7.0, 0.55),
+
+                                                   startPos=Point3(7.0, 7.0, 0.55))
+
+        posInterval3 = self.car.posInterval(3,
+
+                                                   Point3(-7.0, -6.0, 0.55),
+
+                                                   startPos=Point3(-7.0, 7.0, 0.55))
+
+        posInterval4 = self.car.posInterval(3,
+
+                                                   Point3(7.0, -6.0, 0.55),
+
+                                                   startPos=Point3(-7.0, -6.0, 0.55))
+
+
+        hprInterval1 = self.car.hprInterval(3,
+
+                                                   Point3(90, 0, 0),
+
+                                                   startHpr=Point3(0, 0, 0))
+        hprInterval2 = self.car.hprInterval(3,
+
+                                                   Point3(180, 0, 0),
+
+                                                   startHpr=Point3(90, 0, 0))
+        hprInterval3 = self.car.hprInterval(3,
+
+                                                   Point3(270, 0, 0),
+
+                                                   startHpr=Point3(180, 0, 0))
+        hprInterval4 = self.car.hprInterval(3,
+
+                                                   Point3(360, 0, 0),
+
+                                                   startHpr=Point3(270, 0, 0))
+
+
+
+        # Create and play the sequence that coordinates the intervals.
+
+        self.carPace = Sequence(posInterval1, hprInterval1,
+
+                                  posInterval2, hprInterval2,
+
+                                  posInterval3, hprInterval3,
+
+                                  posInterval4, hprInterval4,
+
+                                  name="carPace")
+
+        self.carPace.loop()
 
 
 app = MyApp()
