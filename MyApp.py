@@ -78,7 +78,7 @@ class MyApp(ShowBase):
         self.taskMgr.add(self.moveSun, "moveSun")
 
 
-        self.car = self.loader.loadModel('/home/borges/CV_proj/models/StationWagon/StationWagon.egg')
+        self.car = self.loader.loadModel('models/StationWagon/StationWagon.egg')
         self.car.setPos(7, 0, 0.55)
         self.car.setScale(0.25)
 
