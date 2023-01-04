@@ -75,12 +75,11 @@ class MyApp(ShowBase):
 
 
 
-        nada = PointLight("nada")
-        nada.setColor((1,1,1,1))
-        self.nada_NodePath = self.render.attachNewNode(nada)
-        self.nada_NodePath.setHpr(-45, 45, 0)
-        self.nada_NodePath.setPos(100000,100000,100000)
-        self.render.setLight(self.nada_NodePath)
+        moon = PointLight("moon")
+        moon.setColor((1,1,1,1))
+        self.moon_NodePath = self.render.attachNewNode(moon)
+        self.moon_NodePath.setHpr(-45, 45, 0)
+        self.moon_NodePath.setPos(100000,100000,100000)
 
 
         self.render.setShaderAuto()
@@ -219,9 +218,12 @@ class MyApp(ShowBase):
             if self.keyMap["l"]:
                 self.taskMgr.remove("Update Lights")
                 self.render.clearLight(self.directionalLightNodePath)
+                self.render.setLight(self.moon_NodePath)
+
             else:
                 self.render.setLight(self.directionalLightNodePath)
                 self.taskMgr.add(self.updateLights, "Update Lights")
+                self.render.clearLight(self.moon_NodePath)
         elif key =="h":
             if self.keyMap["h"]:
                 self.render.clearLight(self.house_light_1_NodePath)
