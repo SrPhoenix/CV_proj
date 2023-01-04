@@ -80,7 +80,7 @@ class MyApp(ShowBase):
         moon.setColor((1,1,1,1))
         self.moon_NodePath = self.render.attachNewNode(moon)
         self.moon_NodePath.setHpr(-45, 45, 0)
-        self.moon_NodePath.setPos(100000,100000,100000)
+        self.moon_NodePath.setPos(10000,10000,10000)
 
 
         self.render.setShaderAuto()
