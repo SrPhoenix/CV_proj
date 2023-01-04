@@ -26,14 +26,10 @@ class MyApp(ShowBase):
              Vec4(0.0549, 0.0980, 0.2588, 1)] # nighttime
 
         self.backgroundColor=Vec4(0.8, 0.9, 1, 1)
+        self.lightPosition= Vec3(0,-1,-0.5)
 
         self.timeOfDay = 0
 
-        # Set up the ambient light
-        self.ambientLight = AmbientLight("ambientLight")
-        self.ambientLight.setColor(self.dayColors[self.timeOfDay])
-        ambientLightNodePath = self.render.attachNewNode(self.ambientLight)
-        self.render.setLight(ambientLightNodePath)
 
         # Set up the directional light
         self.directionalLight = DirectionalLight("directionalLight")
@@ -54,11 +50,11 @@ class MyApp(ShowBase):
         # self.render.setLight(self.mainLightNodePath)
 
 
-        # secondLight = DirectionalLight("Secondary light")
-        # self.secondLightNodePath = self.render.attachNewNode(secondLight)
-        # self.secondLightNodePath.setHpr(-45, 45, 0)
-        # self.secondLightNodePath.setPos(60,50,40)
-        # self.render.setLight(self.secondLightNodePath)
+        secondLight = DirectionalLight("Secondary light")
+        self.secondLightNodePath = self.render.attachNewNode(secondLight)
+        self.secondLightNodePath.setHpr(-45, 45, 0)
+        self.secondLightNodePath.setPos(60,50,40)
+        self.render.setLight(self.secondLightNodePath)
 
 
         # thirdLight = AmbientLight("third light")
@@ -232,16 +228,28 @@ class MyApp(ShowBase):
             self.backgroundColor[1]-=0.802 * time_speed
             self.backgroundColor[2]-=0.7412 * time_speed
             self.setBackgroundColor(self.backgroundColor)
+
+
             self.directionalLight.setColor(Vec4(1, 1, 1, 1))
-            self.directionalLight.setDirection(Vec3(0, -1, -0.5))
+
+            self.lightPosition[0]-=0.2*time_speed
+            self.lightPosition[1]+=2*time_speed
+            self.lightPosition[2]+=0.5*time_speed
+            self.directionalLight.setDirection(self.lightPosition)
         elif self.timeOfDay < 2:
             # Nighttime to Daytime
             self.backgroundColor[0]+=0.7451 * time_speed
             self.backgroundColor[1]+=0.802 * time_speed
             self.backgroundColor[2]+=0.7412 * time_speed
             self.setBackgroundColor(self.backgroundColor)
-            self.directionalLight.setColor(Vec4(0.8, 0.6, 0.4, 1))
-            self.directionalLight.setDirection(Vec3(0, -1, 0))
+
+
+            self.directionalLight.setColor(Vec4(0.2, 0.2, 0.2, 1))
+
+            self.lightPosition[0]+=0.2*time_speed
+            self.lightPosition[1]-=2*time_speed
+            self.lightPosition[2]-=0.5*time_speed
+            self.directionalLight.setDirection(self.lightPosition)
         
         return Task.cont
 
