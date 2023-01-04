@@ -32,6 +32,7 @@ class MyApp(ShowBase):
         self.backgroundColor =Vec4(0.8, 0.9, 1, 1)
         self.lightPosition = Vec3(0,-1,-0.5)
         self.lightColor = Vec4(1,1,1,1)
+        self.set_background_color(self.backgroundColor)
 
         self.timeOfDay = 0
 
@@ -133,8 +134,9 @@ class MyApp(ShowBase):
 
 
         self.house.setPos(0, 0, 2.1)
-        self.house.reparentTo(self.render)
         self.house.setHpr(self.house, 90)
+        self.house.reparentTo(self.render)
+
 
 
 
@@ -200,6 +202,25 @@ class MyApp(ShowBase):
         self.carLight_l_Np.setPos(8.0,17.0, 1)
         self.carLight_l_Np.reparentTo(self.car)
         self.render.setLight(self.carLight_l_Np)
+
+
+
+        # Create a sphere with radius 0.4
+        self.sphere = self.loader.loadModel("models/Sphere.egg")
+        self.sphere.setScale(0.4)
+        self.sphere.reparentTo(self.render)
+        # Set the sphere's position and orientation
+        self.sphere.setPos(10, 0, 1.5)
+        self.sphere.setHpr(0, 0, 0)
+
+        self.saveSphereMap('sphereReflect.jpg')
+        self.tex = self.loader.loadTexture('sphereReflect.jpg')
+        #self.sphere.setTexGen(TextureStage.getDefault(), TexGenAttrib.MEyeSphereMap)
+        self.sphere.setTexture(self.tex)
+
+        
+
+
 
 
         self.moveCar()
