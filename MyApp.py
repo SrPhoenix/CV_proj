@@ -26,6 +26,13 @@ class MyApp(ShowBase):
 
 
 
+
+        # self.shader = Shader.load(Shader.SL_GLSL,
+        #                     vertex="myshader.vert",
+        #                     fragment="myshader.frag")
+
+
+
         self.dayColors = [Vec4(0.8, 0.9, 1, 1), # midday
              Vec4(0.0549, 0.0980, 0.2588, 1)] # nighttime
 
@@ -135,7 +142,7 @@ class MyApp(ShowBase):
         self.house.setPos(0, 0, 2.1)
         self.house.setHpr(self.house, 90)
         self.house.reparentTo(self.render)
-
+        #self.house.setShader(self.shader)
 
 
 
