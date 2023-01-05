@@ -31,6 +31,9 @@ class MyApp(ShowBase):
                             vertex="myshader.vert",
                             fragment="myshader.frag")
 
+        self.phong = Shader.load(Shader.SL_GLSL,
+                            vertex="phong.vert",
+                            fragment="phong.frag")
 
 
         self.dayColors = [Vec4(0.8, 0.9, 1, 1), # midday
@@ -42,6 +45,7 @@ class MyApp(ShowBase):
         self.set_background_color(self.backgroundColor)
 
         self.timeOfDay = 0
+        self.handLightPosition= Vec3(0,-20,2)
 
 
 
@@ -58,9 +62,6 @@ class MyApp(ShowBase):
         self.house_light_1_NodePath = self.render.attachNewNode(house_light_1)
         self.house_light_1_NodePath.setPos(-10,-10,10)
         self.render.setLight(self.house_light_1_NodePath)
-
-
-
 
 
 
@@ -88,6 +89,16 @@ class MyApp(ShowBase):
         self.moon_NodePath = self.render.attachNewNode(moon)
         self.moon_NodePath.setHpr(-45, 45, 0)
         self.moon_NodePath.setPos(10000,10000,10000)
+
+
+
+
+        # handLight = DirectionalLight("Hand Light")
+        # handLight.setColor((1,1,1,1))
+        # self.handLight_NodePath = self.render.attachNewNode(handLight)
+        # self.house_light_3_NodePath.setHpr(-45, 45, 0)
+        # self.handLight_NodePath.setPos(self.handLightPosition)
+        # self.render.setLight(self.handLight_NodePath)
 
 
         self.render.setShaderAuto()
@@ -224,7 +235,8 @@ class MyApp(ShowBase):
         #self.sphere.setTexGen(TextureStage.getDefault(), TexGenAttrib.MEyeSphereMap)
         self.sphere.setTexture(self.tex)
 
-        
+        self.sphere.setShader(self.phong)
+
 
 
 
@@ -288,9 +300,13 @@ class MyApp(ShowBase):
 
         if(self.keyMap["w"]):
             self.cameraModel.setY(self.cameraModel, 15 * dt)
+            self.handLightPosition[1]+=15*dt
+            #self.handLight_NodePath.setPos(self.handLightPosition)
             return task.cont
         elif(self.keyMap["s"]):
             self.cameraModel.setY(self.cameraModel, -15 * dt)
+            self.handLightPosition[1]-=15*dt
+            #self.handLight_NodePath.setPos(self.handLightPosition)
             return task.cont
         elif(self.keyMap["a"]):
             self.cameraModel.setX(self.cameraModel, -10 * dt)
@@ -315,7 +331,6 @@ class MyApp(ShowBase):
         time_speed=0.001
         # Update the time of day
         self.timeOfDay += time_speed
-
         if self.timeOfDay>2:
             self.timeOfDay=0
 
