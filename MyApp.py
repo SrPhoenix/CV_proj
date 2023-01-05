@@ -27,9 +27,9 @@ class MyApp(ShowBase):
 
 
 
-        # self.shader = Shader.load(Shader.SL_GLSL,
-        #                     vertex="myshader.vert",
-        #                     fragment="myshader.frag")
+        self.shader = Shader.load(Shader.SL_GLSL,
+                            vertex="myshader.vert",
+                            fragment="myshader.frag")
 
 
 
@@ -142,7 +142,7 @@ class MyApp(ShowBase):
         self.house.setPos(0, 0, 2.1)
         self.house.setHpr(self.house, 90)
         self.house.reparentTo(self.render)
-        #self.house.setShader(self.shader)
+        self.house.setShader(self.shader)
 
 
 
