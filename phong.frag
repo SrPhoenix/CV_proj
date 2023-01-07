@@ -1,3 +1,4 @@
+
 precision mediump float;
 varying vec3 normalInterp;  // Surface normal
 varying vec3 vertPos;       // Vertex position

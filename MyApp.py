@@ -6,7 +6,7 @@ from direct.task import Task
 from panda3d.core import *
 from direct.showbase.ShowBaseGlobal import globalClock
 from direct.actor.Actor import Actor
-
+import gltf
 from direct.interval.IntervalGlobal import Sequence
 from panda3d.core import AntialiasAttrib
 from panda3d.core import Point3
@@ -101,18 +101,198 @@ class MyApp(ShowBase):
         # self.render.setLight(self.handLight_NodePath)
 
 
-        self.render.setShaderAuto()
 
-        # Load the environment model.
 
-        self.scene = self.loader.loadModel("models/environment")
+
+        # Load the ground model.
+        self.scene = self.loader.loadModel("models/ground/scene.gltf")
         # Reparent the model to render.
+
+        self.scene.setScale(20, 20, 20)
+        self.scene.setPos(0,0,-5.3)
+        #self.colorTex = self.loader.loadTexture("models/ground/textures/Cobblestone_diffuse.png")
+
+        # self.scene.setTexture(self.colorTex,1)
+
+        # self.normalMap = self.loader.loadTexture("models/ground/textures/Cobblestone_normal.png")
+        # ts = TextureStage('ts')
+        # ts.setMode(TextureStage.MNormal)
+        # self.scene.setTexture(ts,self.normalMap)
         self.scene.reparentTo(self.render)
-        # Apply scale and position transforms on the model.
-        self.scene.setScale(0.25, 0.25, 0.25)
-        self.scene.setPos(-8, 42, 0)
 
 
+
+        #apply scenery, like buildings and lamps
+
+        self.build1 = self.loader.loadModel("models/builds/BuildingCluster1/BuildingCluster1.egg")
+        self.build1.setScale(0.5,0.5,0.5)
+        self.build1.setPos(40,100,-2.3)
+        self.build1.reparentTo(self.render)
+        
+
+        self.build2 = self.loader.loadModel("models/builds/BuildingCluster2/BuildingCluster2.egg")
+        self.build2.setScale(0.5,0.5,0.5)
+        self.build2.setPos(20,100,-2.3)
+        self.build2.reparentTo(self.render)
+
+
+        self.build3 = self.loader.loadModel("models/builds/BuildingCluster3/BuildingCluster3.egg")
+        self.build3.setScale(0.5,0.5,0.5)
+        self.build3.setPos(0,100,-2.3)
+        self.build3.reparentTo(self.render)
+
+        self.build4 = self.loader.loadModel("models/builds/BuildingCluster4/BuildingCluster4.egg")
+        self.build4.setScale(0.5,0.5,0.5)
+        self.build4.setPos(-20,100,-2.3)
+        self.build4.reparentTo(self.render)
+
+        self.build5 = self.loader.loadModel("models/builds/BuildingCluster5/BuildingCluster5.egg")
+        self.build5.setScale(0.5,0.5,0.5)
+        self.build5.setPos(-40,100,-2.3)
+        self.build5.reparentTo(self.render)
+
+
+        #Another row (back)
+        self.build1 = self.loader.loadModel("models/builds/BuildingCluster1/BuildingCluster1.egg")
+        self.build1.setScale(0.5,0.5,0.5)
+        self.build1.setPos(40,-100,-2.3)
+        self.build1.reparentTo(self.render)
+        
+
+        self.build2 = self.loader.loadModel("models/builds/BuildingCluster2/BuildingCluster2.egg")
+        self.build2.setScale(0.5,0.5,0.5)
+        self.build2.setPos(20,-100,-2.3)
+        self.build2.reparentTo(self.render)
+
+
+        self.build3 = self.loader.loadModel("models/builds/BuildingCluster3/BuildingCluster3.egg")
+        self.build3.setScale(0.5,0.5,0.5)
+        self.build3.setPos(0,-100,-2.3)
+        self.build3.reparentTo(self.render)
+
+        self.build4 = self.loader.loadModel("models/builds/BuildingCluster4/BuildingCluster4.egg")
+        self.build4.setScale(0.5,0.5,0.5)
+        self.build4.setPos(-20,-100,-2.3)
+        self.build4.reparentTo(self.render)
+
+        self.build5 = self.loader.loadModel("models/builds/BuildingCluster5/BuildingCluster5.egg")
+        self.build5.setScale(0.5,0.5,0.5)
+        self.build5.setPos(-40,-100,-2.3)
+        self.build5.reparentTo(self.render)
+
+
+        #Another row (right)
+        self.build1 = self.loader.loadModel("models/builds/BuildingCluster1/BuildingCluster1.egg")
+        self.build1.setScale(0.5,0.5,0.5)
+        self.build1.setPos(70,80,-2.3)
+        self.build1.reparentTo(self.render)
+        
+
+        self.build2 = self.loader.loadModel("models/builds/BuildingCluster2/BuildingCluster2.egg")
+        self.build2.setScale(0.5,0.5,0.5)
+        self.build2.setPos(70,60,-2.3)
+        self.build2.reparentTo(self.render)
+
+
+        self.build3 = self.loader.loadModel("models/builds/BuildingCluster3/BuildingCluster3.egg")
+        self.build3.setScale(0.5,0.5,0.5)
+        self.build3.setPos(70,40,-2.3)
+        self.build3.reparentTo(self.render)
+
+        self.build4 = self.loader.loadModel("models/builds/BuildingCluster4/BuildingCluster4.egg")
+        self.build4.setScale(0.5,0.5,0.5)
+        self.build4.setPos(70,20,-2.3)
+        self.build4.reparentTo(self.render)
+
+        self.build5 = self.loader.loadModel("models/builds/BuildingCluster5/BuildingCluster5.egg")
+        self.build5.setScale(0.5,0.5,0.5)
+        self.build5.setPos(70,0,-2.3)
+        self.build5.reparentTo(self.render)
+
+
+        self.build1 = self.loader.loadModel("models/builds/BuildingCluster1/BuildingCluster1.egg")
+        self.build1.setScale(0.5,0.5,0.5)
+        self.build1.setPos(70,-80,-2.3)
+        self.build1.reparentTo(self.render)
+        
+
+        self.build2 = self.loader.loadModel("models/builds/BuildingCluster2/BuildingCluster2.egg")
+        self.build2.setScale(0.5,0.5,0.5)
+        self.build2.setPos(70,-40,-2.3)
+        self.build2.reparentTo(self.render)
+
+
+        self.build3 = self.loader.loadModel("models/builds/BuildingCluster3/BuildingCluster3.egg")
+        self.build3.setScale(0.5,0.5,0.5)
+        self.build3.setPos(70,-60,-2.3)
+        self.build3.reparentTo(self.render)
+
+        self.build4 = self.loader.loadModel("models/builds/BuildingCluster4/BuildingCluster4.egg")
+        self.build4.setScale(0.5,0.5,0.5)
+        self.build4.setPos(70,-100,-2.3)
+        self.build4.reparentTo(self.render)
+
+        self.build5 = self.loader.loadModel("models/builds/BuildingCluster5/BuildingCluster5.egg")
+        self.build5.setScale(0.5,0.5,0.5)
+        self.build5.setPos(70,-20,-2.3)
+        self.build5.reparentTo(self.render)
+
+
+        #Last Row!! (Left)
+        self.build1 = self.loader.loadModel("models/builds/BuildingCluster1/BuildingCluster1.egg")
+        self.build1.setScale(0.5,0.5,0.5)
+        self.build1.setPos(-70,80,-2.3)
+        self.build1.reparentTo(self.render)
+        
+
+        self.build2 = self.loader.loadModel("models/builds/BuildingCluster2/BuildingCluster2.egg")
+        self.build2.setScale(0.5,0.5,0.5)
+        self.build2.setPos(-70,60,-2.3)
+        self.build2.reparentTo(self.render)
+
+
+        self.build3 = self.loader.loadModel("models/builds/BuildingCluster3/BuildingCluster3.egg")
+        self.build3.setScale(0.5,0.5,0.5)
+        self.build3.setPos(-70,40,-2.3)
+        self.build3.reparentTo(self.render)
+
+        self.build4 = self.loader.loadModel("models/builds/BuildingCluster4/BuildingCluster4.egg")
+        self.build4.setScale(0.5,0.5,0.5)
+        self.build4.setPos(-70,20,-2.3)
+        self.build4.reparentTo(self.render)
+
+        self.build5 = self.loader.loadModel("models/builds/BuildingCluster5/BuildingCluster5.egg")
+        self.build5.setScale(0.5,0.5,0.5)
+        self.build5.setPos(-70,0,-2.3)
+        self.build5.reparentTo(self.render)
+
+
+        self.build1 = self.loader.loadModel("models/builds/BuildingCluster1/BuildingCluster1.egg")
+        self.build1.setScale(0.5,0.5,0.5)
+        self.build1.setPos(-70,-80,-2.3)
+        self.build1.reparentTo(self.render)
+        
+
+        self.build2 = self.loader.loadModel("models/builds/BuildingCluster2/BuildingCluster2.egg")
+        self.build2.setScale(0.5,0.5,0.5)
+        self.build2.setPos(-70,-40,-2.3)
+        self.build2.reparentTo(self.render)
+
+
+        self.build3 = self.loader.loadModel("models/builds/BuildingCluster3/BuildingCluster3.egg")
+        self.build3.setScale(0.5,0.5,0.5)
+        self.build3.setPos(-70,-60,-2.3)
+        self.build3.reparentTo(self.render)
+
+        self.build4 = self.loader.loadModel("models/builds/BuildingCluster4/BuildingCluster4.egg")
+        self.build4.setScale(0.5,0.5,0.5)
+        self.build4.setPos(-70,-100,-2.3)
+        self.build4.reparentTo(self.render)
+
+        self.build5 = self.loader.loadModel("models/builds/BuildingCluster5/BuildingCluster5.egg")
+        self.build5.setScale(0.5,0.5,0.5)
+        self.build5.setPos(-70,-20,-2.3)
+        self.build5.reparentTo(self.render)
 
 
 
@@ -142,10 +322,6 @@ class MyApp(ShowBase):
 
         self.house = self.loader.loadModel("models/house/new_house.obj")
 
-        # Reparent the model to render.
-
-        #self.scene.reparentTo(self.render)
-
         # Apply scale and position transforms on the model.
         self.house.setScale(0.5, 0.5, 0.5)
 
@@ -156,10 +332,6 @@ class MyApp(ShowBase):
         self.house.setShader(self.shader)
 
 
-
-        # Add the spinCameraTask procedure to the task manager.
-
-        #self.taskMgr.add(self.spinCameraTask, "SpinCameraTask")
 
         self.car_x = 7
         self.car_y = 0

@@ -1,6 +1,7 @@
+
 uniform mat4 u_MVPMatrix;     // A constant representing the combined model/view/projection matrix.
 uniform mat4 u_MVMatrix;      // A constant representing the combined model/view matrix.
-uniform vec3 u_LightPos;      // The position of the light in eye space.
+uniform vec3 lightPosition;      // The position of the light in eye space.
  
 attribute vec4 a_Position;    // Per-vertex position information we will pass in.
 attribute vec4 a_Color;       // Per-vertex color information we will pass in.
@@ -18,10 +19,10 @@ void main()
     vec3 modelViewNormal = vec3(u_MVMatrix * vec4(a_Normal, 0.0));
  
     // Will be used for attenuation.
-    float distance = length(u_LightPos - modelViewVertex);
+    float distance = length(lightPosition - modelViewVertex);
  
     // Get a lighting direction vector from the light to the vertex.
-    vec3 lightVector = normalize(u_LightPos - modelViewVertex);
+    vec3 lightVector = normalize(lightPosition - modelViewVertex);
  
     // Calculate the dot product of the light vector and vertex normal. If the normal and light vector are
     // pointing in the same direction then it will get max illumination.

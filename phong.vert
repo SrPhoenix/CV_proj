@@ -1,3 +1,4 @@
+
 attribute vec3 position;
 attribute vec3 normal;
 uniform mat4 projection, modelview, normalMat;
