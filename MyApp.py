@@ -114,10 +114,10 @@ class MyApp(ShowBase):
 
         # self.scene.setTexture(self.colorTex,1)
 
-        # self.normalMap = self.loader.loadTexture("models/ground/textures/Cobblestone_normal.png")
-        # ts = TextureStage('ts')
-        # ts.setMode(TextureStage.MNormal)
-        # self.scene.setTexture(ts,self.normalMap)
+        self.normalMap = self.loader.loadTexture("/home/borges/CV_proj/textures/Cobblestone_normal.png")
+        ts = TextureStage('ts')
+        ts.setMode(TextureStage.MNormal)
+        self.scene.setTexture(ts,self.normalMap)
         self.scene.reparentTo(self.render)
 
 
@@ -294,6 +294,10 @@ class MyApp(ShowBase):
         self.build5.setPos(-70,-20,-2.3)
         self.build5.reparentTo(self.render)
 
+        # Sound
+        self.mySound = self.loader.loadSfx("CitySounds.mp3")
+        self.mySound.setVolume(0.5)
+        self.mySound.play()
 
 
         #SKYCUBE WITH TEXTURES
@@ -500,6 +504,9 @@ class MyApp(ShowBase):
 
     def updateLights(self, task):
 
+
+        if self.mySound.status() != self.mySound.PLAYING:
+            self.mySound.play()
         time_speed=0.001
         # Update the time of day
         self.timeOfDay += time_speed
