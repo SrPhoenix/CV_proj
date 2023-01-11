@@ -47,7 +47,10 @@ class MyApp(ShowBase):
         self.timeOfDay = 0
         self.handLightPosition= Vec3(0,-20,2)
 
-
+        alight = AmbientLight('alight')
+        alight.setColor((0.2, 0.2, 0.2, 1))
+        alnp = self.render.attachNewNode(alight)
+        self.render.setLight(alnp)
 
         self.directionalLight = DirectionalLight("directionalLight")
         self.directionalLight.setDirection(Vec3(0, 0, -1))
@@ -93,12 +96,12 @@ class MyApp(ShowBase):
 
 
 
-        # handLight = DirectionalLight("Hand Light")
-        # handLight.setColor((1,1,1,1))
-        # self.handLight_NodePath = self.render.attachNewNode(handLight)
-        # self.house_light_3_NodePath.setHpr(-45, 45, 0)
-        # self.handLight_NodePath.setPos(self.handLightPosition)
-        # self.render.setLight(self.handLight_NodePath)
+        handLight = PointLight("Hand Light")
+        handLight.setColor((1,1,1,1))
+        self.handLight_NodePath = self.render.attachNewNode(handLight)
+        self.handLight_NodePath.setHpr(-45, 45, 0)
+        self.handLight_NodePath.setPos(self.handLightPosition)
+        self.render.setLight(self.handLight_NodePath)
 
 
 
@@ -108,9 +111,8 @@ class MyApp(ShowBase):
         self.scene = self.loader.loadModel("models/ground/scene.gltf")
         # Reparent the model to render.
 
-        self.scene.setScale(20, 20, 20)
+        self.scene.setScale(30, 30, 20)
         self.scene.setPos(0,0,-5.3)
-        #self.colorTex = self.loader.loadTexture("models/ground/textures/Cobblestone_diffuse.png")
 
         # self.scene.setTexture(self.colorTex,1)
 
@@ -324,6 +326,8 @@ class MyApp(ShowBase):
 
 
 
+        view_matrix = self.cam.get_mat()
+        self.viewPos = render.get_relative_point(render, view_matrix.get_row3(3))
         self.house = self.loader.loadModel("models/house/new_house.obj")
 
         # Apply scale and position transforms on the model.
@@ -333,8 +337,24 @@ class MyApp(ShowBase):
         self.house.setPos(0, 0, 2.1)
         self.house.setHpr(self.house, 90)
         self.house.reparentTo(self.render)
-        self.house.setShader(self.shader)
 
+        lightColor = Vec4(0.8, 0.9, 1, 1) # the position of the light source
+        ambient = (0.2, 0.2, 0.2, 1.0) # the ambient color of the light
+        diffuse = (0.5, 0.5, 0.5, 1.0) # the diffuse color of the light
+        specular = (0.7, 0.7, 0.7, 1.0) # the specular color of the light
+        viewPos = (0, 0, 5, 1) # the position of the viewer
+
+        self.house.setShaderInput("lightColor", lightColor)
+        self.house.setShaderInput("ambient", ambient)
+        self.house.setShaderInput("diffuse", diffuse)
+        self.house.setShaderInput("specular", specular)
+        self.house.setShaderInput("viewPos", viewPos)
+
+
+        phong_shader = Shader.load(Shader.SL_GLSL, "testing.vert", "testing.frag")
+
+        #self.house.setShader(phong_shader)
+        
 
 
         self.car_x = 7
@@ -346,6 +366,7 @@ class MyApp(ShowBase):
 
         self.car.reparentTo(self.render)
 
+        
 
         #code for first person view
         self.disableMouse()
@@ -382,7 +403,6 @@ class MyApp(ShowBase):
 
         self.taskMgr.add(self.cameraControl, "Camera Control")
         self.taskMgr.add(self.updateLights, "Update Lights")
-        #self.taskMgr.add(self.lightControl, "Light Control")
         self.render.setAntialias(AntialiasAttrib.MAuto)
         carLight_r= PointLight("car light right")
         self.carLight_r_Np = self.render.attachNewNode(carLight_r)
@@ -395,6 +415,10 @@ class MyApp(ShowBase):
         self.carLight_l_Np.setPos(8.0,17.0, 1)
         self.carLight_l_Np.reparentTo(self.car)
         self.render.setLight(self.carLight_l_Np)
+
+
+
+
 
 
 
@@ -411,14 +435,159 @@ class MyApp(ShowBase):
         #self.sphere.setTexGen(TextureStage.getDefault(), TexGenAttrib.MEyeSphereMap)
         self.sphere.setTexture(self.tex)
 
-        self.sphere.setShader(self.phong)
+        #self.sphere.setShader(self.phong)
+
+        self.sphere2 = self.loader.loadModel("models/Sphere.egg")
+        self.sphere2.setScale(0.4)
+        self.sphere2.reparentTo(self.render)
+        # Set the spheres positions and orientations
+        self.sphere2.setPos(10, 5, 1.5)
+        sphereMaterial= Material()
+        sphereMaterial.setShininess(100)
+        sphereMaterial.setSpecular((1,1,1,1))
+        self.sphere2.setMaterial(sphereMaterial)
+
+        self.sphere3 = self.loader.loadModel("models/Sphere.egg")
+        self.sphere3.setScale(0.4)
+        self.sphere3.reparentTo(self.render)
+        self.sphere3.setPos(10, -5, 1.5)
+
+        self.worldTex= self.loader.loadTexture("textures/2k_earth_daymap.jpg")
+        self.sphere3.setTexture(self.worldTex, 1)
+
+        self.normalWorld = self.loader.loadTexture("textures/earth-normalmap.jpg")
+        textureStage = TextureStage('ts')
+        textureStage.setMode(TextureStage.MNormal)
+        self.sphere3.setTexture(ts,self.normalWorld)
+
+        self.sphere4 = self.loader.loadModel("models/Sphere.egg")
+        self.sphere4.setScale(0.4)
+        self.sphere4.reparentTo(self.render)
+        self.sphere4.setPos(10, 10, 1.5)
+
+        self.heightMap = self.loader.loadTexture("textures/heightmap.png")
+        textureStage = TextureStage('ts')
+        textureStage.setMode(TextureStage.MHeight)
+        self.sphere3.setTexture(ts,self.heightMap)
+
+        self.sphere5 = self.loader.loadModel("models/Sphere.egg")
+        self.sphere5.setScale(0.4)
+        self.sphere5.reparentTo(self.render)
+        self.sphere5.setPos(10, -10, 1.5)
+
+
+        # Set more cars
+        self.car1 = self.loader.loadModel('models/testing/ola.obj')
+        self.car1.setPos(-20,100,0.55)
+        self.car1.setScale(1)
+        self.car1.setHpr(self.car1, 90, 90,0)
+
+        self.car1.reparentTo(self.render)
+
+        self.car1.posInterval(20, Point3(-20,100,0.55), Point3(-20,-100,0.55)).loop()
+
+
+        self.car2 = self.loader.loadModel('models/testing/ola.obj')
+        self.car2.setPos(-20,80,0.55)
+        self.car2.setScale(1)
+        self.car2.setHpr(self.car2, 90, 90,0)
+
+        self.car2.reparentTo(self.render)
+
+        self.sq1= Sequence(self.car2.posInterval(20, Point3(-20,80,0.55), Point3(-20,-100,0.55)), self.car2.posInterval(20, Point3(-20,100,0.55), Point3(-20,80,0.55)))
+        self.sq1.loop()
+
+
+
+        self.car3 = self.loader.loadModel('models/testing/ola.obj')
+        self.car3.setPos(-20,30,0.55)
+        self.car3.setScale(1)
+        self.car3.setHpr(self.car3, 90, 90,0)
+
+        self.car3.reparentTo(self.render)
+
+        self.sq2= Sequence(self.car3.posInterval(20, Point3(-20,30,0.55), Point3(-20,-100,0.55)), self.car3.posInterval(20, Point3(-20,100,0.55), Point3(-20,30,0.55)))
+        self.sq2.loop()
+
+
+
+        self.car4 = self.loader.loadModel('models/testing/ola.obj')
+        self.car4.setPos(-20,-10,0.55)
+        self.car4.setScale(1)
+        self.car4.setHpr(self.car4, 90, 90,0)
+
+        self.car4.reparentTo(self.render)
+
+        self.sq3= Sequence(self.car4.posInterval(20, Point3(-20,-10,0.55), Point3(-20,-100,0.55)), self.car4.posInterval(20, Point3(-20,100,0.55), Point3(-20,-10,0.55)))
+        self.sq3.loop()
+
+
+        self.car5 = self.loader.loadModel('models/testing/ola.obj')
+        self.car5.setPos(-24,-100,0.55)
+        self.car5.setScale(1)
+        self.car5.setHpr(self.car5, -90, 90,0)
+
+        self.car5.reparentTo(self.render)
+
+        self.car5.posInterval(20, Point3(-24,-100,0.55), Point3(-24,100,0.55)).loop()
+
+
+        self.car6 = self.loader.loadModel('models/testing/ola.obj')
+        self.car6.setPos(-24,-70,0.55)
+        self.car6.setScale(1)
+        self.car6.setHpr(self.car6, -90, 90,0)
+
+        self.car6.reparentTo(self.render)
+
+        self.sq4= Sequence(self.car6.posInterval(20, Point3(-24,-70,0.55), Point3(-24,100,0.55)), self.car6.posInterval(20, Point3(-24,-100,0.55), Point3(-24,-70,0.55)))
+        self.sq4.loop()
+
+
+
+        self.car7 = self.loader.loadModel('models/testing/ola.obj')
+        self.car7.setPos(-24,-40,0.55)
+        self.car7.setScale(1)
+        self.car7.setHpr(self.car7, -90, 90,0)
+
+        self.car7.reparentTo(self.render)
+
+        self.sq5= Sequence(self.car7.posInterval(20, Point3(-24,-40,0.55), Point3(-24,100,0.55)), self.car7.posInterval(20, Point3(-24,-100,0.55), Point3(-24,-40,0.55)))
+        self.sq5.loop()
+
+
+
+        self.car8 = self.loader.loadModel('models/testing/ola.obj')
+        self.car8.setPos(-24,10,0.55)
+        self.car8.setScale(1)
+        self.car8.setHpr(self.car8, -90, 90,0)
+
+        self.car8.reparentTo(self.render)
+
+        self.sq6= Sequence(self.car8.posInterval(20, Point3(-24,10,0.55), Point3(-24,100,0.55)), self.car8.posInterval(20, Point3(-24,-100,0.55), Point3(-24,10,0.55)))
+        self.sq6.loop()
+
+
+
+        # Set people
+        self.npc1 = self.loader.loadModel('models/npc1/scene.gltf')
+        self.npc1.setPos(3,-8,0)
+        self.npc1.setScale(0.008)
+        self.npc1.setHpr(self.npc1, -30, 90,0)
+
+        self.npc1.reparentTo(self.render)
+
+        self.npc2 = self.loader.loadModel('models/npc1/scene.gltf')
+        self.npc2.setPos(-3,-15,0)
+        self.npc2.setScale(0.008)
+        self.npc2.setHpr(self.npc2, 30, 90,0)
+
+        self.npc2.reparentTo(self.render)
 
 
 
 
 
         self.moveCar()
-        #print(base.messenger.toggleVerbose())
 
 
     def lightControl(self,  key):
@@ -458,6 +627,7 @@ class MyApp(ShowBase):
 
     def toggle(self, key):
         self.keyMap[key] = not self.keyMap.get(key)
+
 
     def cameraControl(self, task):
 
@@ -500,10 +670,7 @@ class MyApp(ShowBase):
             return task.cont
 
 
-
-
     def updateLights(self, task):
-
 
         if self.mySound.status() != self.mySound.PLAYING:
             self.mySound.play()
