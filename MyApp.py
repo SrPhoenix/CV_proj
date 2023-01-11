@@ -410,22 +410,24 @@ class MyApp(ShowBase):
         self.camera.reparentTo(self.cameraModel)
 
 
-        self.keyMap = {"w" : False, "s" : False, "a" : False, "d" : False, "space": False, "shift": False, "c": False, "l": False, "h": False, "p": False}
+        self.keyMap = {"w" : False, "s" : False, "a" : False, "d" : False, "space": False, "shift": False, "c": False, "l": False, "h": False, "p": False, "0": False, "1":False, "2":False}
 
         self.accept("w", self.setKey, ["w", True])
         self.accept("s", self.setKey, ["s", True])
         self.accept("a", self.setKey, ["a", True])
         self.accept("d", self.setKey, ["d", True])
+        self.accept("0", self.lightControl, ["0"])
+        self.accept("1", self.lightControl, ["1"])
+        self.accept("2", self.lightControl, ["2"])
         self.accept("c", self.lightControl, ["c"])
         self.accept("l", self.lightControl, ["l"])
         self.accept("h", self.lightControl, ["h"])
         self.accept("p", self.lightControl, ["p"])
 
-
-        self.accept("w-up", self.setKey, ["w", False])
         self.accept("s-up", self.setKey, ["s", False])
         self.accept("a-up", self.setKey, ["a", False])
         self.accept("d-up", self.setKey, ["d", False])
+        self.accept("w-up", self.setKey, ["w", False])
 
         self.accept("space", self.setKey, ["space", True])
         self.accept("space-up", self.setKey, ["space", False])
@@ -455,7 +457,7 @@ class MyApp(ShowBase):
 
 
 
-
+        # Sphere 1, sphere with mirror like texture
         # Create a sphere with radius 0.4
         self.sphere = self.loader.loadModel("models/Sphere.egg")
         self.sphere.setScale(0.4)
@@ -471,6 +473,9 @@ class MyApp(ShowBase):
 
         #self.sphere.setShader(self.phong)
 
+
+
+        # Sphere 2, sphere with metal like texture properties, which shines more than other spheres
         self.sphere2 = self.loader.loadModel("models/Sphere.egg")
         self.sphere2.setScale(0.4)
         self.sphere2.reparentTo(self.render)
@@ -481,6 +486,8 @@ class MyApp(ShowBase):
         sphereMaterial.setSpecular((1,1,1,1))
         self.sphere2.setMaterial(sphereMaterial)
 
+
+        # Sphere 3, sphere with earth texture and a normal map applied to it
         self.sphere3 = self.loader.loadModel("models/Sphere.egg")
         self.sphere3.setScale(0.4)
         self.sphere3.reparentTo(self.render)
@@ -494,6 +501,7 @@ class MyApp(ShowBase):
         textureStage.setMode(TextureStage.MNormal)
         self.sphere3.setTexture(ts,self.normalWorld)
 
+        # Sphere 4, sphere with height map of iceland applied
         self.sphere4 = self.loader.loadModel("models/Sphere.egg")
         self.sphere4.setScale(0.4)
         self.sphere4.reparentTo(self.render)
@@ -504,6 +512,7 @@ class MyApp(ShowBase):
         textureStage.setMode(TextureStage.MHeight)
         self.sphere3.setTexture(ts,self.heightMap)
 
+        # Sphere 5, sphere with goraud shader applied
         self.sphere5 = self.loader.loadModel("models/Sphere.egg")
         self.sphere5.setScale(0.4)
         self.sphere5.reparentTo(self.render)
@@ -599,19 +608,19 @@ class MyApp(ShowBase):
 
 
         # Set people
-        self.npc1 = self.loader.loadModel('./models/npc3/scene.gltf')
-        self.npc1.setPos(3,-8,0)
-        self.npc1.setScale(0.008)
-        self.npc1.setHpr(self.npc1, -30, 0,0)
+        # self.npc1 = self.loader.loadModel('./models/npc3/scene.gltf')
+        # self.npc1.setPos(3,-8,0)
+        # self.npc1.setScale(0.008)
+        # self.npc1.setHpr(self.npc1, -30, 0,0)
 
-        self.npc1.reparentTo(self.render)
+        # self.npc1.reparentTo(self.render)
 
-        self.npc2 = self.loader.loadModel('./models/npc2/scene.gltf')
-        self.npc2.setPos(-3,-15,0)
-        self.npc2.setScale(0.008)
-        self.npc2.setHpr(self.npc2, 30, 90,0)
+        # self.npc2 = self.loader.loadModel('./models/npc2/scene.gltf')
+        # self.npc2.setPos(-3,-15,0)
+        # self.npc2.setScale(0.008)
+        # self.npc2.setHpr(self.npc2, 30, 90,0)
 
-        self.npc2.reparentTo(self.render)
+        # self.npc2.reparentTo(self.render)
 
 
 
@@ -622,6 +631,22 @@ class MyApp(ShowBase):
 
     def lightControl(self,  key):
         self.keyMap[key] = not self.keyMap.get(key)
+
+        if key=="0":
+            self.cameraModel.setX(0)
+            self.cameraModel.setY(-20)
+            self.cameraModel.setZ(3)
+
+        if key=="1":
+            self.cameraModel.setX(0)
+            self.cameraModel.setY(-80)
+            self.cameraModel.setZ(40)
+
+        if key=="2":
+            self.cameraModel.setX(20)
+            self.cameraModel.setY(-10)
+            self.cameraModel.setZ(3)
+
         if key =="c":
             if self.keyMap["c"]:
                 self.render.clearLight(self.carLight_r_Np)
@@ -667,7 +692,7 @@ class MyApp(ShowBase):
 
 
     def cameraControl(self, task):
-
+        
         dt = globalClock.getDt()
         if(dt > .20):
             return task.cont
@@ -683,11 +708,9 @@ class MyApp(ShowBase):
 
         if(self.keyMap["w"]):
             self.cameraModel.setY(self.cameraModel, 15 * dt)
-            self.handLightPosition[1]+=15*dt
             return task.cont
         elif(self.keyMap["s"]):
             self.cameraModel.setY(self.cameraModel, -15 * dt)
-            self.handLightPosition[1]-=15*dt
             return task.cont
         elif(self.keyMap["a"]):
             self.cameraModel.setX(self.cameraModel, -10 * dt)
@@ -714,6 +737,8 @@ class MyApp(ShowBase):
         self.timeOfDay += time_speed
         if self.timeOfDay>2:
             self.timeOfDay=0
+
+
 
 
         # Update the ambient light
