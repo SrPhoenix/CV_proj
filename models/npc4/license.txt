@@ -1,0 +1,11 @@
+Model Information:
+* title:	Yuri Test NPC
+* source:	https://sketchfab.com/3d-models/yuri-test-npc-35d44b2356024cb38989bcee776b4776
+* author:	yuriannoue (https://sketchfab.com/yuriannoue)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Yuri Test NPC" (https://sketchfab.com/3d-models/yuri-test-npc-35d44b2356024cb38989bcee776b4776) by yuriannoue (https://sketchfab.com/yuriannoue) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

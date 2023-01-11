@@ -18,12 +18,17 @@ class MyApp(ShowBase):
     def __init__(self):
 
         ShowBase.__init__(self)
-
+        
         #window
         properties = WindowProperties()
         properties.setSize(1000, 750)
         self.win.requestProperties(properties)
+        getModelPath().appendDirectory('/home/borges/CV_proj/models/car1')
+        getModelPath().appendDirectory('/home/borges/CV_proj/models/car2')
+        getModelPath().appendDirectory('/home/borges/CV_proj/models/ground')
 
+        # self.loader.getMoadelPath().appendDirectory("/home/borges/CV_proj/models/car1")
+        # self.loader.getMoadelPath().appendDirectory("/home/borges/CV_proj/models/car2")
 
 
 
@@ -506,20 +511,20 @@ class MyApp(ShowBase):
 
 
         # Set more cars
-        self.car1 = self.loader.loadModel('models/testing/ola.obj')
+        self.car1 = self.loader.loadModel('models/car2/scene.gltf')
         self.car1.setPos(-20,100,0.55)
-        self.car1.setScale(1)
-        self.car1.setHpr(self.car1, 90, 90,0)
+        self.car1.setScale(0.2)
+        self.car1.setHpr(self.car1, -180, 0,0)
 
         self.car1.reparentTo(self.render)
 
         self.car1.posInterval(20, Point3(-20,100,0.55), Point3(-20,-100,0.55)).loop()
 
 
-        self.car2 = self.loader.loadModel('models/testing/ola.obj')
+        self.car2 = self.loader.loadModel('models/car2/scene.gltf')
         self.car2.setPos(-20,80,0.55)
-        self.car2.setScale(1)
-        self.car2.setHpr(self.car2, 90, 90,0)
+        self.car2.setScale(0.2)
+        self.car2.setHpr(self.car2, -180, 0,0)
 
         self.car2.reparentTo(self.render)
 
@@ -528,10 +533,10 @@ class MyApp(ShowBase):
 
 
 
-        self.car3 = self.loader.loadModel('models/testing/ola.obj')
+        self.car3 = self.loader.loadModel('models/car2/scene.gltf')
         self.car3.setPos(-20,30,0.55)
-        self.car3.setScale(1)
-        self.car3.setHpr(self.car3, 90, 90,0)
+        self.car3.setScale(0.2)
+        self.car3.setHpr(self.car3, -180, 0,0)
 
         self.car3.reparentTo(self.render)
 
@@ -540,10 +545,10 @@ class MyApp(ShowBase):
 
 
 
-        self.car4 = self.loader.loadModel('models/testing/ola.obj')
+        self.car4 = self.loader.loadModel('models/car2/scene.gltf')
         self.car4.setPos(-20,-10,0.55)
-        self.car4.setScale(1)
-        self.car4.setHpr(self.car4, 90, 90,0)
+        self.car4.setScale(0.2)
+        self.car4.setHpr(self.car4, -180, 0,0)
 
         self.car4.reparentTo(self.render)
 
@@ -551,20 +556,18 @@ class MyApp(ShowBase):
         self.sq3.loop()
 
 
-        self.car5 = self.loader.loadModel('models/testing/ola.obj')
+        self.car5 = self.loader.loadModel('models/car2/scene.gltf')
         self.car5.setPos(-24,-100,0.55)
-        self.car5.setScale(1)
-        self.car5.setHpr(self.car5, -90, 90,0)
+        self.car5.setScale(0.2)
 
         self.car5.reparentTo(self.render)
 
         self.car5.posInterval(20, Point3(-24,-100,0.55), Point3(-24,100,0.55)).loop()
 
 
-        self.car6 = self.loader.loadModel('models/testing/ola.obj')
+        self.car6 = self.loader.loadModel('models/car2/scene.gltf')
         self.car6.setPos(-24,-70,0.55)
-        self.car6.setScale(1)
-        self.car6.setHpr(self.car6, -90, 90,0)
+        self.car6.setScale(0.2)
 
         self.car6.reparentTo(self.render)
 
@@ -573,10 +576,9 @@ class MyApp(ShowBase):
 
 
 
-        self.car7 = self.loader.loadModel('models/testing/ola.obj')
+        self.car7 = self.loader.loadModel('models/car2/scene.gltf')
         self.car7.setPos(-24,-40,0.55)
-        self.car7.setScale(1)
-        self.car7.setHpr(self.car7, -90, 90,0)
+        self.car7.setScale(0.2)
 
         self.car7.reparentTo(self.render)
 
@@ -585,10 +587,9 @@ class MyApp(ShowBase):
 
 
 
-        self.car8 = self.loader.loadModel('models/testing/ola.obj')
+        self.car8 = self.loader.loadModel('models/car2/scene.gltf')
         self.car8.setPos(-24,10,0.55)
-        self.car8.setScale(1)
-        self.car8.setHpr(self.car8, -90, 90,0)
+        self.car8.setScale(0.2)
 
         self.car8.reparentTo(self.render)
 
@@ -598,14 +599,14 @@ class MyApp(ShowBase):
 
 
         # Set people
-        self.npc1 = self.loader.loadModel('models/npc1/scene.gltf')
+        self.npc1 = self.loader.loadModel('./models/npc3/scene.gltf')
         self.npc1.setPos(3,-8,0)
         self.npc1.setScale(0.008)
-        self.npc1.setHpr(self.npc1, -30, 90,0)
+        self.npc1.setHpr(self.npc1, -30, 0,0)
 
         self.npc1.reparentTo(self.render)
 
-        self.npc2 = self.loader.loadModel('models/npc1/scene.gltf')
+        self.npc2 = self.loader.loadModel('./models/npc2/scene.gltf')
         self.npc2.setPos(-3,-15,0)
         self.npc2.setScale(0.008)
         self.npc2.setHpr(self.npc2, 30, 90,0)

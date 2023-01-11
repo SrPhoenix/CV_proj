@@ -1,0 +1,11 @@
+Model Information:
+* title:	POLICE CAR - Belgian VW Transporter
+* source:	https://sketchfab.com/3d-models/police-car-belgian-vw-transporter-35eaf9505e13464385404402ad865508
+* author:	Mickael Boitte (https://sketchfab.com/boittemike1)
+
+Model License:
+* license type:	CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)
+* requirements:	Author must be credited. No commercial use.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "POLICE CAR - Belgian VW Transporter" (https://sketchfab.com/3d-models/police-car-belgian-vw-transporter-35eaf9505e13464385404402ad865508) by Mickael Boitte (https://sketchfab.com/boittemike1) licensed under CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)
