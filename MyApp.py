@@ -85,6 +85,12 @@ class MyApp(ShowBase):
         self.house_light_3_NodePath.setPos(6,-5,1)
         self.render.setLight(self.house_light_3_NodePath)
 
+        lamp_light = PointLight("Lamp Light 1")
+        lamp_light.setColor((1,1,1,1))
+        self.lamp_light_NodePath = self.render.attachNewNode(lamp_light)
+        self.lamp_light_NodePath.setPos(-10,-10,10)
+        self.render.setLight(self.lamp_light_NodePath)
+
 
 
         moon = PointLight("moon")
@@ -96,12 +102,19 @@ class MyApp(ShowBase):
 
 
 
-        handLight = PointLight("Hand Light")
-        handLight.setColor((1,1,1,1))
-        self.handLight_NodePath = self.render.attachNewNode(handLight)
-        self.handLight_NodePath.setHpr(-45, 45, 0)
-        self.handLight_NodePath.setPos(self.handLightPosition)
-        self.render.setLight(self.handLight_NodePath)
+        lamp_light_1 = PointLight("Lamp Light 1")
+        lamp_light_1.setColor((1,1,1,1))
+        self.lamp_light_1_NodePath = self.render.attachNewNode(lamp_light_1)
+        self.lamp_light_1_NodePath.setHpr(-45, 45, 0)
+        self.lamp_light_1_NodePath.setPos(-3.5,-15,3)
+        self.render.setLight(self.lamp_light_1_NodePath)
+
+        lamp_light_2 = PointLight("Lamp Light 2")
+        lamp_light_2.setColor((1,1,1,1))
+        self.lamp_light_2_NodePath = self.render.attachNewNode(lamp_light_2)
+        self.lamp_light_2_NodePath.setHpr(-45, 45, 0)
+        self.lamp_light_2_NodePath.setPos(3.5,-15,3)
+        self.render.setLight(self.lamp_light_2_NodePath)
 
 
 
@@ -366,6 +379,20 @@ class MyApp(ShowBase):
 
         self.car.reparentTo(self.render)
 
+        self.lamp1 = self.loader.loadModel('models/LampPost/LampPost.egg')
+        self.lamp1.setPos(-4,-15,0)
+        self.lamp1.setHpr(self.lamp1, -90,0,0)
+        self.lamp1.setScale(0.25)
+
+        self.lamp1.reparentTo(self.render)
+
+
+        self.lamp2 = self.loader.loadModel('models/LampPost/LampPost.egg')
+        self.lamp2.setPos(4,-15,0)
+        self.lamp2.setHpr(self.lamp2, 90,0,0)
+        self.lamp2.setScale(0.25)
+
+        self.lamp2.reparentTo(self.render)
         
 
         #code for first person view
@@ -378,7 +405,7 @@ class MyApp(ShowBase):
         self.camera.reparentTo(self.cameraModel)
 
 
-        self.keyMap = {"w" : False, "s" : False, "a" : False, "d" : False, "space": False, "shift": False, "c": False, "l": False, "h": False}
+        self.keyMap = {"w" : False, "s" : False, "a" : False, "d" : False, "space": False, "shift": False, "c": False, "l": False, "h": False, "p": False}
 
         self.accept("w", self.setKey, ["w", True])
         self.accept("s", self.setKey, ["s", True])
@@ -387,6 +414,8 @@ class MyApp(ShowBase):
         self.accept("c", self.lightControl, ["c"])
         self.accept("l", self.lightControl, ["l"])
         self.accept("h", self.lightControl, ["h"])
+        self.accept("p", self.lightControl, ["p"])
+
 
         self.accept("w-up", self.setKey, ["w", False])
         self.accept("s-up", self.setKey, ["s", False])
@@ -618,6 +647,13 @@ class MyApp(ShowBase):
                 self.render.setLight(self.house_light_1_NodePath)
                 self.render.setLight(self.house_light_2_NodePath)
                 self.render.setLight(self.house_light_3_NodePath)
+        elif key =="p":
+            if self.keyMap["p"]:
+                self.render.clearLight(self.lamp_light_1_NodePath)
+                self.render.clearLight(self.lamp_light_2_NodePath)
+            else:
+                self.render.setLight(self.lamp_light_1_NodePath)
+                self.render.setLight(self.lamp_light_2_NodePath)
         
 
 
@@ -647,12 +683,10 @@ class MyApp(ShowBase):
         if(self.keyMap["w"]):
             self.cameraModel.setY(self.cameraModel, 15 * dt)
             self.handLightPosition[1]+=15*dt
-            #self.handLight_NodePath.setPos(self.handLightPosition)
             return task.cont
         elif(self.keyMap["s"]):
             self.cameraModel.setY(self.cameraModel, -15 * dt)
             self.handLightPosition[1]-=15*dt
-            #self.handLight_NodePath.setPos(self.handLightPosition)
             return task.cont
         elif(self.keyMap["a"]):
             self.cameraModel.setX(self.cameraModel, -10 * dt)
