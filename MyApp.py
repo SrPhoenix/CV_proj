@@ -32,6 +32,8 @@ class MyApp(ShowBase):
         getModelPath().appendDirectory('/home/borges/CV_proj/models/npc4')
         getModelPath().appendDirectory('/home/borges/CV_proj/models/npc1')
         getModelPath().appendDirectory('/home/borges/CV_proj/models/ground')
+        getModelPath().appendDirectory('/home/borges/CV_proj/textures')
+
 
         #variables needed for change of day and night
 
@@ -528,6 +530,9 @@ class MyApp(ShowBase):
         self.sphere8.reparentTo(self.render)
         self.sphere8.setPos(10, 20, 1.5)
 
+        gouraud_shader = Shader.load(Shader.SL_GLSL, "goraud.vert", "goraud.frag")
+        self.sphere8.setShader(gouraud_shader)
+
 
         # Set more cars
         self.car1 = self.loader.loadModel('models/car2/scene.gltf')
@@ -634,9 +639,9 @@ class MyApp(ShowBase):
 
         # Easter egg! :D 
         self.actor = Actor('models/npc1/scene.gltf')
-        self.actor.setPos(-3,-15,0)
+        self.actor.setPos(-3,-15,-200)
         self.actor.setScale(0.008)
-        self.actor.setHpr(self.actor, 180, 0,0)
+        self.actor.setHpr(self.actor, 180, 0,180)
         self.actor.reparentTo(self.render)
         self.actor.loop('Action_Hitachi')
 
