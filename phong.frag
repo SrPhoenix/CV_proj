@@ -1,40 +1,57 @@
+/*
+Visual Computing 2022/2023
+--------------------------
+Samuel Silva, Oct. 2022
+
+Fragment shader implementing per-fragment shading
+
+*/
+#version 330
 
 precision mediump float;
-varying vec3 normalInterp;  // Surface normal
-varying vec3 vertPos;       // Vertex position
-uniform int mode;   // Rendering mode
-uniform float Ka;   // Ambient reflection coefficient
-uniform float Kd;   // Diffuse reflection coefficient
-uniform float Ks;   // Specular reflection coefficient
-uniform float shininessVal; // Shininess
-// Material color
-uniform vec3 ambientColor;
-uniform vec3 diffuseColor;
-uniform vec3 specularColor;
-uniform vec3 lightPos; // Light position
+
+in vec3 vNormal;
+in vec3 fragPos;
+
+uniform vec4 lightPosition;
+uniform vec3 viewerPosition;
+uniform vec4 lightColor;
+
+out vec4 out_color;
+
+// these are properties of the OBJECT
+    vec4 ambient;
+    vec4 diffuse;
+    vec4 specular;
+    float shininess;
+
 
 void main() {
-  vec3 N = normalize(normalInterp);
-  vec3 L = normalize(lightPos - vertPos);
+    // ambient
+    float ambientStrength = 0.2;
+    vec4 ambient = ambientStrength * ambient * lightColor;
 
-  // Lambert's cosine law
-  float lambertian = max(dot(N, L), 0.0);
-  float specular = 0.0;
-  if(lambertian > 0.0) {
-    vec3 R = reflect(-L, N);      // Reflected light vector
-    vec3 V = normalize(-vertPos); // Vector to viewer
-    // Compute the specular term
-    float specAngle = max(dot(R, V), 0.0);
-    specular = pow(specAngle, shininessVal);
-  }
-  gl_FragColor = vec4(Ka * ambientColor +
-                      Kd * lambertian * diffuseColor +
-                      Ks * specular * specularColor, 1.0);
+    // diffuse
+    vec3 norm = normalize(vNormal); //interpolated normals might not be normalized
 
-  // only ambient
-  if(mode == 2) gl_FragColor = vec4(Ka * ambientColor, 1.0);
-  // only diffuse
-  if(mode == 3) gl_FragColor = vec4(Kd * lambertian * diffuseColor, 1.0);
-  // only specular
-  if(mode == 4) gl_FragColor = vec4(Ks * specular * specularColor, 1.0);
+    vec3 lightDir;
+
+    if (lightPosition[3] == 0.0) // directional lighting
+        lightDir = normalize(lightPosition.xyz);
+    else
+        lightDir = normalize(lightPosition.xyz - fragPos);
+
+
+    float diff = max(dot(norm, lightDir), 0.0);
+    vec4 diffuse = diff * diffuse * lightColor;
+
+    // specular
+    float specularStrength = 0.8;
+    vec3 viewDir = normalize(viewerPosition - fragPos);
+    vec3 reflectDir = reflect(-lightDir, norm);
+    float spec = pow(max(dot(-viewDir, reflectDir), 0.0), shininess/2);
+    vec4 specular = specularStrength * spec * specular * lightColor;
+
+    out_color = vec4(0.0, 1.0, 0.0, 1.0);
+
 }

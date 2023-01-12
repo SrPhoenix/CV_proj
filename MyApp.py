@@ -12,6 +12,8 @@ from panda3d.core import AntialiasAttrib
 from panda3d.core import Point3
 import math
 from panda3d.core import PointLight
+from direct.actor.Actor import Actor
+
 
 class MyApp(ShowBase):
 
@@ -23,23 +25,15 @@ class MyApp(ShowBase):
         properties = WindowProperties()
         properties.setSize(1000, 750)
         self.win.requestProperties(properties)
-        getModelPath().appendDirectory('/home/borges/CV_proj/models/car1')
         getModelPath().appendDirectory('/home/borges/CV_proj/models/car2')
+        getModelPath().appendDirectory('/home/borges/CV_proj/models/car3')
+        getModelPath().appendDirectory('/home/borges/CV_proj/models/npc3')
+        getModelPath().appendDirectory('/home/borges/CV_proj/models/npc2')
+        getModelPath().appendDirectory('/home/borges/CV_proj/models/npc4')
+        getModelPath().appendDirectory('/home/borges/CV_proj/models/npc1')
         getModelPath().appendDirectory('/home/borges/CV_proj/models/ground')
 
-        # self.loader.getMoadelPath().appendDirectory("/home/borges/CV_proj/models/car1")
-        # self.loader.getMoadelPath().appendDirectory("/home/borges/CV_proj/models/car2")
-
-
-
-        self.shader = Shader.load(Shader.SL_GLSL,
-                            vertex="myshader.vert",
-                            fragment="myshader.frag")
-
-        self.phong = Shader.load(Shader.SL_GLSL,
-                            vertex="phong.vert",
-                            fragment="phong.frag")
-
+        #variables needed for change of day and night
 
         self.dayColors = [Vec4(0.8, 0.9, 1, 1), # midday
              Vec4(0.0549, 0.0980, 0.2588, 1)] # nighttime
@@ -50,7 +44,10 @@ class MyApp(ShowBase):
         self.set_background_color(self.backgroundColor)
 
         self.timeOfDay = 0
-        self.handLightPosition= Vec3(0,-20,2)
+
+
+
+        # Lights used in the scene
 
         alight = AmbientLight('alight')
         alight.setColor((0.2, 0.2, 0.2, 1))
@@ -72,9 +69,6 @@ class MyApp(ShowBase):
         self.render.setLight(self.house_light_1_NodePath)
 
 
-
-
-
         house_light_2 = PointLight("House light 2")
         house_light_2.setColor((1,1,1,1))
         self.house_light_2_NodePath = self.render.attachNewNode(house_light_2)
@@ -90,19 +84,6 @@ class MyApp(ShowBase):
         self.house_light_3_NodePath.setPos(6,-5,1)
         self.render.setLight(self.house_light_3_NodePath)
 
-        lamp_light = PointLight("Lamp Light 1")
-        lamp_light.setColor((1,1,1,1))
-        self.lamp_light_NodePath = self.render.attachNewNode(lamp_light)
-        self.lamp_light_NodePath.setPos(-10,-10,10)
-        self.render.setLight(self.lamp_light_NodePath)
-
-
-
-        moon = PointLight("moon")
-        moon.setColor((1,1,1,1))
-        self.moon_NodePath = self.render.attachNewNode(moon)
-        self.moon_NodePath.setHpr(-45, 45, 0)
-        self.moon_NodePath.setPos(10000,10000,10000)
 
 
 
@@ -127,22 +108,41 @@ class MyApp(ShowBase):
 
         # Load the ground model.
         self.scene = self.loader.loadModel("models/ground/scene.gltf")
-        # Reparent the model to render.
 
+        # Augment the size of the ground so it fits everything
         self.scene.setScale(30, 30, 20)
         self.scene.setPos(0,0,-5.3)
 
-        # self.scene.setTexture(self.colorTex,1)
+        # Apply normal mapping to the ground
 
-        self.normalMap = self.loader.loadTexture("/home/borges/CV_proj/textures/Cobblestone_normal.png")
+        self.normalMap = self.loader.loadTexture("textures/Cobblestone_normal.png")
         ts = TextureStage('ts')
         ts.setMode(TextureStage.MNormal)
         self.scene.setTexture(ts,self.normalMap)
+
+        # Render the ground
         self.scene.reparentTo(self.render)
 
 
 
         #apply scenery, like buildings and lamps
+
+        self.lamp1 = self.loader.loadModel('models/LampPost/LampPost.egg')
+        self.lamp1.setPos(-4,-15,0)
+        self.lamp1.setHpr(self.lamp1, -90,0,0)
+        self.lamp1.setScale(0.25)
+
+        self.lamp1.reparentTo(self.render)
+
+
+        self.lamp2 = self.loader.loadModel('models/LampPost/LampPost.egg')
+        self.lamp2.setPos(4,-15,0)
+        self.lamp2.setHpr(self.lamp2, 90,0,0)
+        self.lamp2.setScale(0.25)
+
+        self.lamp2.reparentTo(self.render)
+
+        # Front Row of Buildings
 
         self.build1 = self.loader.loadModel("models/builds/BuildingCluster1/BuildingCluster1.egg")
         self.build1.setScale(0.5,0.5,0.5)
@@ -343,38 +343,20 @@ class MyApp(ShowBase):
         # self.ball.setTexture(self.tex)
 
 
-
-        view_matrix = self.cam.get_mat()
-        self.viewPos = render.get_relative_point(render, view_matrix.get_row3(3))
+        # Loads the center and main house
         self.house = self.loader.loadModel("models/house/new_house.obj")
 
         # Apply scale and position transforms on the model.
         self.house.setScale(0.5, 0.5, 0.5)
-
-
         self.house.setPos(0, 0, 2.1)
         self.house.setHpr(self.house, 90)
         self.house.reparentTo(self.render)
 
-        lightColor = Vec4(0.8, 0.9, 1, 1) # the position of the light source
-        ambient = (0.2, 0.2, 0.2, 1.0) # the ambient color of the light
-        diffuse = (0.5, 0.5, 0.5, 1.0) # the diffuse color of the light
-        specular = (0.7, 0.7, 0.7, 1.0) # the specular color of the light
-        viewPos = (0, 0, 5, 1) # the position of the viewer
 
-        self.house.setShaderInput("lightColor", lightColor)
-        self.house.setShaderInput("ambient", ambient)
-        self.house.setShaderInput("diffuse", diffuse)
-        self.house.setShaderInput("specular", specular)
-        self.house.setShaderInput("viewPos", viewPos)
-
-
-        phong_shader = Shader.load(Shader.SL_GLSL, "testing.vert", "testing.frag")
-
-        #self.house.setShader(phong_shader)
         
 
 
+        # Simple car that goes arround the house, with lights implemented
         self.car_x = 7
         self.car_y = 0
         self.car_z = 0.55
@@ -384,23 +366,22 @@ class MyApp(ShowBase):
 
         self.car.reparentTo(self.render)
 
-        self.lamp1 = self.loader.loadModel('models/LampPost/LampPost.egg')
-        self.lamp1.setPos(-4,-15,0)
-        self.lamp1.setHpr(self.lamp1, -90,0,0)
-        self.lamp1.setScale(0.25)
+        # Implementing lights in the car
+        carLight_r= PointLight("car light right")
+        self.carLight_r_Np = self.render.attachNewNode(carLight_r)
+        self.carLight_r_Np.setPos(7.0,17.0, 1)
+        self.carLight_r_Np.reparentTo(self.car)
+        self.render.setLight(self.carLight_r_Np)
 
-        self.lamp1.reparentTo(self.render)
+        carLight_l= PointLight("car light Left")
+        self.carLight_l_Np = self.render.attachNewNode(carLight_l)
+        self.carLight_l_Np.setPos(8.0,17.0, 1)
+        self.carLight_l_Np.reparentTo(self.car)
+        self.render.setLight(self.carLight_l_Np)
 
-
-        self.lamp2 = self.loader.loadModel('models/LampPost/LampPost.egg')
-        self.lamp2.setPos(4,-15,0)
-        self.lamp2.setHpr(self.lamp2, 90,0,0)
-        self.lamp2.setScale(0.25)
-
-        self.lamp2.reparentTo(self.render)
         
 
-        #code for first person view
+        #code for first person view and light control
         self.disableMouse()
 
         self.cameraModel = self.loader.loadModel("models/camera")
@@ -410,7 +391,7 @@ class MyApp(ShowBase):
         self.camera.reparentTo(self.cameraModel)
 
 
-        self.keyMap = {"w" : False, "s" : False, "a" : False, "d" : False, "space": False, "shift": False, "c": False, "l": False, "h": False, "p": False, "0": False, "1":False, "2":False}
+        self.keyMap = {"w" : False, "s" : False, "a" : False, "d" : False, "space": False, "shift": False, "c": False, "l": False, "h": False, "p": False, "t":False, "0": False, "1":False, "2":False, "3":False}
 
         self.accept("w", self.setKey, ["w", True])
         self.accept("s", self.setKey, ["s", True])
@@ -419,10 +400,12 @@ class MyApp(ShowBase):
         self.accept("0", self.lightControl, ["0"])
         self.accept("1", self.lightControl, ["1"])
         self.accept("2", self.lightControl, ["2"])
+        self.accept("3", self.lightControl, ["3"])
         self.accept("c", self.lightControl, ["c"])
         self.accept("l", self.lightControl, ["l"])
         self.accept("h", self.lightControl, ["h"])
         self.accept("p", self.lightControl, ["p"])
+        self.accept("t", self.lightControl, ["t"])
 
         self.accept("s-up", self.setKey, ["s", False])
         self.accept("a-up", self.setKey, ["a", False])
@@ -440,21 +423,6 @@ class MyApp(ShowBase):
         self.taskMgr.add(self.cameraControl, "Camera Control")
         self.taskMgr.add(self.updateLights, "Update Lights")
         self.render.setAntialias(AntialiasAttrib.MAuto)
-        carLight_r= PointLight("car light right")
-        self.carLight_r_Np = self.render.attachNewNode(carLight_r)
-        self.carLight_r_Np.setPos(7.0,17.0, 1)
-        self.carLight_r_Np.reparentTo(self.car)
-        self.render.setLight(self.carLight_r_Np)
-
-        carLight_l= PointLight("car light Left")
-        self.carLight_l_Np = self.render.attachNewNode(carLight_l)
-        self.carLight_l_Np.setPos(8.0,17.0, 1)
-        self.carLight_l_Np.reparentTo(self.car)
-        self.render.setLight(self.carLight_l_Np)
-
-
-
-
 
 
         # Sphere 1, sphere with mirror like texture
@@ -480,10 +448,13 @@ class MyApp(ShowBase):
         self.sphere2.setScale(0.4)
         self.sphere2.reparentTo(self.render)
         # Set the spheres positions and orientations
-        self.sphere2.setPos(10, 5, 1.5)
+        self.sphere2.setPos(10, -5, 1.5)
         sphereMaterial= Material()
-        sphereMaterial.setShininess(100)
+        sphereMaterial.setShininess(200)
         sphereMaterial.setSpecular((1,1,1,1))
+        sphereMaterial.setDiffuse((0,1,1,1))
+        sphereMaterial.setAmbient((0.5,1,1,1))
+
         self.sphere2.setMaterial(sphereMaterial)
 
 
@@ -491,7 +462,7 @@ class MyApp(ShowBase):
         self.sphere3 = self.loader.loadModel("models/Sphere.egg")
         self.sphere3.setScale(0.4)
         self.sphere3.reparentTo(self.render)
-        self.sphere3.setPos(10, -5, 1.5)
+        self.sphere3.setPos(10, 5, 1.5)
 
         self.worldTex= self.loader.loadTexture("textures/2k_earth_daymap.jpg")
         self.sphere3.setTexture(self.worldTex, 1)
@@ -512,11 +483,50 @@ class MyApp(ShowBase):
         textureStage.setMode(TextureStage.MHeight)
         self.sphere3.setTexture(ts,self.heightMap)
 
-        # Sphere 5, sphere with goraud shader applied
+        # Sphere 5, sphere with high polygon mesh
         self.sphere5 = self.loader.loadModel("models/Sphere.egg")
         self.sphere5.setScale(0.4)
         self.sphere5.reparentTo(self.render)
         self.sphere5.setPos(10, -10, 1.5)
+
+        # Sphere 6, sphere with low polygon mesh
+        self.sphere6 = self.loader.loadModel("models/Lowpoly_Sphere/Sphere.egg")
+        self.sphere6.setScale(0.4)
+        self.sphere6.reparentTo(self.render)
+        self.sphere6.setPos(10, -15, 1.5)
+
+        # Sphere 7, sphere with phong shader applied
+        self.sphere7 = self.loader.loadModel("models/Sphere.egg")
+        self.sphere7.setScale(0.4)
+        self.sphere7.reparentTo(self.render)
+        self.sphere7.setPos(10, 15, 1.5)
+                # Variables for the shade
+        lightColor = Vec4(0.8, 0.9, 1, 1) # the position of the light source
+        ambient = (0.2, 0.2, 0.2, 1.0) # the ambient color of the light
+        diffuse = (0.5, 0.5, 0.5, 1.0) # the diffuse color of the light
+        specular = (0.7, 0.7, 0.7, 1.0) # the specular color of the light
+        viewPos = (0, 0, 5, 1) # the position of the viewer
+
+        #Gathers matrix of camera position
+        view_matrix = self.cam.get_mat()
+        self.viewPos = render.get_relative_point(render, view_matrix.get_row3(3))
+
+        # Applies variables to be processed in the shader
+        self.sphere7.setShaderInput("lightColor", lightColor)
+        self.sphere7.setShaderInput("ambient", ambient)
+        self.sphere7.setShaderInput("diffuse", diffuse)
+        self.sphere7.setShaderInput("specular", specular)
+        self.sphere7.setShaderInput("viewPos", viewPos)
+
+        # Loads the shader
+        phong_shader = Shader.load(Shader.SL_GLSL, "phong.vert", "phong.frag")
+        self.sphere7.setShader(phong_shader)
+
+        # Sphere 8, sphere with goraud shader applied
+        self.sphere8 = self.loader.loadModel("models/Sphere.egg")
+        self.sphere8.setScale(0.4)
+        self.sphere8.reparentTo(self.render)
+        self.sphere8.setPos(10, 20, 1.5)
 
 
         # Set more cars
@@ -605,22 +615,31 @@ class MyApp(ShowBase):
         self.sq6= Sequence(self.car8.posInterval(20, Point3(-24,10,0.55), Point3(-24,100,0.55)), self.car8.posInterval(20, Point3(-24,-100,0.55), Point3(-24,10,0.55)))
         self.sq6.loop()
 
+        self.car9 = self.loader.loadModel('models/car3/scene.gltf')
+        self.car9.setPos(0,20,0)
+        self.car9.setScale(1)
+        self.car9.reparent_to(self.render)
+
 
 
         # Set people
-        # self.npc1 = self.loader.loadModel('./models/npc3/scene.gltf')
-        # self.npc1.setPos(3,-8,0)
-        # self.npc1.setScale(0.008)
-        # self.npc1.setHpr(self.npc1, -30, 0,0)
 
-        # self.npc1.reparentTo(self.render)
+        self.npc2 = self.loader.loadModel('./models/npc1/scene.gltf')
+        self.npc2.setPos(-3,-15,0)
+        self.npc2.setScale(0.008)
+        self.npc2.setHpr(self.npc2, 30, 90,0)
 
-        # self.npc2 = self.loader.loadModel('./models/npc2/scene.gltf')
-        # self.npc2.setPos(-3,-15,0)
-        # self.npc2.setScale(0.008)
-        # self.npc2.setHpr(self.npc2, 30, 90,0)
+        self.npc2.reparentTo(self.render)
 
-        # self.npc2.reparentTo(self.render)
+
+        # Easter egg! :D 
+        self.actor = Actor('models/npc1/scene.gltf')
+        self.actor.setPos(-3,-15,0)
+        self.actor.setScale(0.008)
+        self.actor.setHpr(self.actor, 180, 0,0)
+        self.actor.reparentTo(self.render)
+        self.actor.loop('Action_Hitachi')
+
 
 
 
@@ -647,6 +666,11 @@ class MyApp(ShowBase):
             self.cameraModel.setY(-10)
             self.cameraModel.setZ(3)
 
+        if key=="3":
+            self.cameraModel.setX(0)
+            self.cameraModel.setY(-200)
+            self.cameraModel.setZ(-100)
+
         if key =="c":
             if self.keyMap["c"]:
                 self.render.clearLight(self.carLight_r_Np)
@@ -658,12 +682,10 @@ class MyApp(ShowBase):
             if self.keyMap["l"]:
                 self.taskMgr.remove("Update Lights")
                 self.render.clearLight(self.directionalLightNodePath)
-                self.render.setLight(self.moon_NodePath)
 
             else:
                 self.render.setLight(self.directionalLightNodePath)
                 self.taskMgr.add(self.updateLights, "Update Lights")
-                self.render.clearLight(self.moon_NodePath)
         elif key =="h":
             if self.keyMap["h"]:
                 self.render.clearLight(self.house_light_1_NodePath)
@@ -678,6 +700,23 @@ class MyApp(ShowBase):
                 self.render.clearLight(self.lamp_light_1_NodePath)
                 self.render.clearLight(self.lamp_light_2_NodePath)
             else:
+                self.render.setLight(self.lamp_light_1_NodePath)
+                self.render.setLight(self.lamp_light_2_NodePath)
+        elif key =="t":
+            if self.keyMap["t"]:
+                self.render.clearLight(self.carLight_r_Np)
+                self.render.clearLight(self.carLight_l_Np)
+                self.render.clearLight(self.house_light_1_NodePath)
+                self.render.clearLight(self.house_light_2_NodePath)
+                self.render.clearLight(self.house_light_3_NodePath)
+                self.render.clearLight(self.lamp_light_1_NodePath)
+                self.render.clearLight(self.lamp_light_2_NodePath)
+            else:
+                self.render.setLight(self.carLight_r_Np)
+                self.render.setLight(self.carLight_l_Np)
+                self.render.setLight(self.house_light_1_NodePath)
+                self.render.setLight(self.house_light_2_NodePath)
+                self.render.setLight(self.house_light_3_NodePath)
                 self.render.setLight(self.lamp_light_1_NodePath)
                 self.render.setLight(self.lamp_light_2_NodePath)
         
@@ -737,12 +776,6 @@ class MyApp(ShowBase):
         self.timeOfDay += time_speed
         if self.timeOfDay>2:
             self.timeOfDay=0
-
-
-
-
-        # Update the ambient light
-        #self.ambientLight.setColor(self.dayColors[int(self.timeOfDay)])
 
         # Update the directional light
         if self.timeOfDay < 1:

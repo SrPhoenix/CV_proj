@@ -1,13 +1,37 @@
+/*
+Visual Computing 2022/2023
+--------------------------
+Samuel Silva, Oct. 2022
 
-attribute vec3 position;
-attribute vec3 normal;
-uniform mat4 projection, modelview, normalMat;
-varying vec3 normalInterp;
-varying vec3 vertPos;
+Vertex shader supporting per-fragment shading.
+The shader just passes the position and normal in world coordinates. These wiil be interpolated by OpenGL
+when passed to the fragment shader.
 
-void main(){
-  vec4 vertPos4 = modelview * vec4(position, 1.0);
-  vertPos = vec3(vertPos4) / vertPos4.w;
-  normalInterp = vec3(normalMat * vec4(normal, 0.0));
-  gl_Position = projection * vertPos4;
+*/
+#version 330
+
+layout (location = 0) in vec3 position;
+layout (location = 1) in vec3 color;
+layout (location = 2) in vec3 normal;
+
+out vec3 vNormal;
+out vec3 fragPos;
+
+// Model view and projection matrices
+
+uniform mat4 p3d_ModelViewMatrix;
+uniform mat4 p3d_ProjectionMatrix;
+uniform mat4 p3d_ModelMatrix;
+uniform mat4 p3d_ViewMatrix;
+uniform mat4 p3d_ViewProjectionMatrix;
+
+
+uniform vec4 lightColor;
+
+void main()
+{
+    fragPos = vec3(p3d_ModelMatrix *  vec4(position, 1.0));
+    vNormal = mat3(transpose(inverse(p3d_ModelMatrix))) * normal;
+
+    gl_Position = p3d_ProjectionMatrix * p3d_ViewMatrix * vec4(fragPos, 1.0);
 }
